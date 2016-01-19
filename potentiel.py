@@ -1,25 +1,42 @@
 import matplotlib as mpl
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
+import matplotlib.cm as cm
 import matplotlib.pyplot as plt
+import math
 
-#definition de fonctions
+
+#definition de fonctions dfsdfsdfsdf
 
 def E(x):
 	return np.piecewise(x,[x<0,x>=0], [lambda x: np.exp(0.4/x),0]) 
+
+#derivee de E
+def dE(x):
+	return np.piecewise(x,[x<0,x>=0], [lambda x: -0.4*np.exp(0.4/x)/x^2,0])
 
 #la fonction E(a-x)E(x-b) donne un "blip" sur [a;b]
 def blip(a,b,x):
 	return E(a-x)*E(x-b)
 
+#derivee du blip
+def dblip(a,b,x):
+	return -dE(a-x)*E(x-b)+E(a-x)*dE(x-b)
+
 #blip normalise, son max vaut 1
 def blipn(a,b,x):
 	return blip(a,b,x)*np.exp(4/(b-a))	
+
+def dblipn(a,b,x):
+	return dblip(a,b,x)*np.exp(4/(b-a))
 
 #definition du potentiel, deux puits dont le recouvrement est defini par delta
 def V(x,y,delta):
 	return -(blipn(0,0.5+delta,x)*blipn(0,0.5+delta,y)+0.5*blipn(0.5-delta,1,x)*blipn(0.5-delta,1,y))
 
+def gradV(x,y,delta):
+	return [-(dblipn(0,0.5+delta,x)*blipn(0,0.5+delta,y)+0.5*dblipn(0.5-delta,1,x)*blipn(0.5-delta,1,y)), \
+	 -(blipn(0,0.5+delta,x)*dblipn(0,0.5+delta,y)+0.5*blipn(0.5-delta,1,x)*dblipn(0.5-delta,1,y))]
 
 delta = 0.15
 fig = plt.figure(1)
