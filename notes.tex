@@ -22,7 +22,7 @@
 \subtitle{Simulation d'un système bosonique avec des intégrales de chemin}
 
 \newcommand{\hham}{\hat{H}}
-\newcommand{\dom}{L\Pi^d}
+\newcommand{\dom}{L\mathbb{T}^d}
 \begin{document}
 \maketitle
 
@@ -32,31 +32,31 @@ On se propose d'étudier un système équivalent à deux particules identiques (
 \hham = -\frac{\hbar^2}{2m}\sum_{i=1}^{d}\left( \frac{\partial^2}{\partial x_{1,i}}+\frac{\partial^2}{\partial x_{2,i}}\right)+v(x_1)+v(x_2)+w(x_1,x_2)
 \end{equation}
 
-Où $v$ est le potentiel à une particule et $w$ le potentiel d'intéraction à deux particules. On pourra, par exemple, s'intéresser à la dynamique du système si on prend pour $v$ un potentiel avec deux puits de profondeur inégale, et étudier dans quel cas les deux particules sont dans le même puits et dans quel cas elles sont dans des puits différents.
+où $v$ est le potentiel à une particule et $w$ le potentiel d'interaction à deux particules, supposés ici continus. On pourra, par exemple, s'intéresser à la dynamique du système si on prend pour $v$ un potentiel avec deux puits de profondeurs inégales, et étudier dans quel cas les deux particules sont dans le même puits et dans quel cas elles sont dans des puits différents.
 \\
 
-Dans le cas général, nous étudions le système de $N$ particules dans un domaine que nous appelons $\dom$, où $L$ est la dimension caractéristique du domaine et $d$ sa dimension. Nous verrons après qu'il convient de prendre un tore.
+Dans le cas général, nous étudions le système de $N$ particules dans un domaine que nous appelons $\dom$, où $L$ est la longueur caractéristique du domaine et $d$ sa dimension. Nous verrons après qu'il convient de prendre un tore.
 \\
 
-Dans ce cas, nous avons toujours au minimum $\hham$ autoadjoint sur $\mathcal{H}=\mathcal{L}^2(\dom)$. Pour étudier notre système nous avons par ailleurs besoin de définir pour $\beta = \frac{1}{k_BT}\geq 0$ l'opérateur :
+Dans ce cas, nous avons toujours au minimum $\hham$ autoadjoint sur $\mathcal{H}=\mathrm{L}^2(\dom)$. Pour étudier notre système nous avons par ailleurs besoin de définir pour $\beta = \frac{1}{k_BT}\geq 0$ l'opérateur :
 \begin{equation}
 \hat{A}(\beta)=e^{-\beta \hham}
 \end{equation} 
-Comme $\hham$ est autoadjoint, cet opérateur l'est aussi. Par ailleurs nous avons que 
+Comme $\hham$ est autoadjoint, cet opérateur est un opérateur auto-adjoint positif. Par ailleurs nous avons que 
 \begin{equation}
-Z(\beta)=Tr(\hat{A})(\beta)=Tr(e^{-\beta \hham})\in \mathbb{R}^+\cup \lbrace\infty\rbrace
+Z(\beta)=\mathrm{Tr}(\hat{A}(\beta))=\mathrm{Tr}(e^{-\beta \hham})\in \mathbb{R}^+\cup \lbrace+\infty\rbrace
 \end{equation}
 Pour que $Z(\beta)\in\mathbb{R}^+$ il faut que $\hham$ soit borné inférieurement et à résolvante compacte. Dans la pratique, deux cas de figure suffissent à avoir cela :
 \begin{itemize}
-\item On prend pour $v$ un potentiel confinant.
-\item Le domaine correspond à une super-celulle, i.e. on prend un tore ou on impose des conditions aux bords périodiques.
+\item on prend pour $v$ un potentiel confinant et pour $w$ un potentiel borné.
+\item le domaine correspond à une super-cellule, i.e. on prend un tore (conditions aux bords périodiques).
 \end{itemize}
 Nous allons donc considérer pour $\dom$ le tore de longueur caractéristique $L$ et de dimension $d$.
-Nous pouvons alors dans ce cas général à N particules écrire un hamiltonien où nous séparons la partie cinétique de la partie potentielle.
+Nous pouvons alors dans ce cas général à N particules écrire un hamiltonien où nous séparons la partie cinétique de la partie potentielle :
 \begin{equation}
-\hham_N=\hat{T}_N+\hat{V}_N
+\hham_N=\hat{T}_N+\hat{V}_N ,
 \end{equation}
-Où, en notant $X=(x_1,x_2,...,x_{N-1},x_N)$ le vecteur à $dN$ composantes : 
+où, en notant $X=(x_1,x_2,...,x_{N-1},x_N)$ le vecteur à $dN$ composantes : 
 \begin{equation}
 \hat{T}_N=-\frac{\hbar^2}{2m}\sum_{i=1}^{N}\Delta_{x_i}=-\frac{\hbar^2}{2m}\Delta_X
 \end{equation}
@@ -67,25 +67,25 @@ De même nous allons nous restreindre, du moins dans un premier temps, au cas o�
 \end{equation}
 Ainsi si nous prenons $v$ et $w$ bornées à valeurs réelles, alors $\hham_N$ est auto-adjoint, borné inférieurement, à résolvante compacte et la fonction de partition $Z(\beta)$ est bien définie car nous avons que 
 \begin{equation}
-\forall \beta>0, Z(\beta)<\infty
+\forall \beta>0,\quad Z(\beta)<\infty
 \end{equation}
 
 Notre objectif pour la suite sera d'exprimer la fonction de partition comme une intégrale.
-\subsection{Expression de $Z$ comme intégrale}
+\subsection{Expression de $Z$ comme une intégrale}
 Soit $\beta>0$ fixé. Alors, comme vu auparavant, $e^{-\beta\hham}$ est un opérateur à trace. Nous savons par ailleurs qu'il a un noyau $k_{\beta}(X,X'), (X,X')\in(\dom)^2$, i.e. que pour tout $\psi\in \mathcal{H}$:
 \begin{equation}
-(e^{-\beta \hham}\psi)(X)=\int_{\dom} k_{\beta}(X,X')\phi(X')\mathrm{d}X'
+(e^{-\beta \hham}\psi)(X)=\int_{\dom} k_{\beta}(X,X')\phi(X')\mathrm{d}X'.
 \end{equation}
-Il est possible, par l'étude de fonctions elliptiques, de montrer que $k_\beta$ est une fonction régulière.
-On montre de même que dans la plupart des cas :
+Il est possible, par des arguments de régularité elliptiques, de montrer que $k_\beta$ est une fonction régulière.
+On peut ainsi montrer que dans ce cas :
 \begin{equation}
-Z(\beta)=Tr(e^{-\beta \hham})=\int_{\dom}k_\beta(X,X)\mathrm{d}X
+Z(\beta)=\mathrm{Tr}(e^{-\beta \hham})=\int_{\dom}k_\beta(X,X)\mathrm{d}X
 \end{equation}
 Nous allons donc exprimer ceci à l'aide de la formule de Trotter, qui dit que, pour $\hham=\hat{V}+\hat{T}$ :
 \begin{equation}
-(e^{-\beta \hham}\psi)(X)=\lim_{M\to \infty}\left[(e^{-\frac{\beta}{2M}\hat{V}}e^{-\frac{\beta}{M}\hat{T}}e^{-\frac{\beta}{2M}\hat{V}})^M\psi\right](X)
+(e^{-\beta \hham}\psi)(X)=\lim_{M\to \infty}\left[(e^{-\frac{\beta}{2M}\hat{V}}e^{-\frac{\beta}{M}\hat{T}}e^{-\frac{\beta}{2M}\hat{V}})^M\psi\right](X),
 \end{equation}
-Où la limite s'entend au sens de $\mathcal{L}^2$. 
+Où la limite s'entend au sens de $\mathrm{L}^2$. 
 
 \subsection{Démonstration de la formule de Trotter}
 Nous notons dorénavant $V=\hat{V}$ et $T=\hat{T}$.
@@ -97,14 +97,14 @@ Nous avons pour M quelconque les égalités suivantes :
 (e^{-\frac{\beta}{M}T}\psi)(X)&=(e^{\frac{\hbar^2\beta}{2mM}\Delta}\psi)(X)\\
 &=\int_{\dom}k_T(X,X')\psi(X')\mathrm{d}X'
 \end{align}
-Où nous avons noté, avec $\sigma^2=\frac{mM}{\beta \hbar^2}$, 
+où nous avons noté, avec $\sigma^2=\frac{mM}{\beta \hbar^2}$, 
 
 \begin{equation}
-k_T(X,X')=\sum_{k\in\mathbb{Z}^{dN}}\frac{1}{(2\pi\sigma^2)^{\frac{dN}{2}}}exp(-\frac{|X-X'-k|^2}{2\sigma^2})
+k_T(X,X')=\sum_{k\in\mathbb{Z}^{dN}}\frac{1}{(2\pi\sigma^2)^{\frac{dN}{2}}}\exp\left(-\frac{|X-X'-k|^2}{2\sigma^2}\right).
 \end{equation}
 Or pour $\sigma$ petit, i.e. pour $M$ grand, seul le terme en $k=0$ a une contribution appréciable, de sorte que, lorsque $M\gg 1$: 
 \begin{equation}
-k_T(X,X')=\frac{1}{(2\pi\sigma^2)^{\frac{dN}{2}}}e^{-\frac{|X-X'|^2}{2\sigma^2}}
+k_T(X,X')\simeq\frac{1}{(2\pi\sigma^2)^{\frac{dN}{2}}}e^{-\frac{|X-X'|^2}{2\sigma^2}}
 \end{equation}
 
 
@@ -115,42 +115,42 @@ h_M=e^{-\frac{\beta}{2M}\hat{V}}e^{-\frac{\beta}{M}\hat{T}}e^{-\frac{\beta}{2M}\
 
 Ainsi 
 \begin{align*}
-(h_M^M\psi)(X) &= h_M^{M-1} e^{-\frac{\beta}{2M}V(X)}\int_{\dom}k_T(X,X_1)e^{-\frac{\beta}{2M}}V(X_1)\psi(X_1)\mathrm{d}X_1
+(h_M^M\psi)(X) &=  e^{-\frac{\beta}{2M}V(X)}\int_{\dom}k_T(X,X_1)e^{-\frac{\beta}{2M}}V(X_1)\left(h_M^{M-1}\psi\right)(X_1)\mathrm{d}X_1
 \\
-&=h_M^{M-2} e^{-\frac{\beta}{2M}V(X)}\int_{(\dom)^2}k_T(X,X_2)k_T(X_2,X_1)e^{-\frac{\beta}{M}\left(V(X_2)+\frac{V(X_1)}{2}\right)}\psi(X_1)\mathrm{d}X_1\mathrm{d}X_2
+&= e^{-\frac{\beta}{2M}V(X)}\int_{(\dom)^2}k_T(X,X_2)k_T(X_2,X_1)e^{-\frac{\beta}{M}\left(V(X_2)+\frac{V(X_1)}{2}\right)}\left(h_M^{M-2}\psi\right)(X_1)\mathrm{d}X_1\mathrm{d}X_2
 \\
-&=h_M^{M-3} e^{-\frac{\beta}{2M}V(X)}\int_{(\dom)^3}k_T(X,X_3)k_T(X_3,X_2)k_T(X_2,X_1)e^{-\frac{\beta}{M}\left(V(X_3)+V(X_2)+\frac{V(X_1)}{2}\right)}\psi(X_1)\mathrm{d}X_1\mathrm{d}X_2\mathrm{d}X_3
+&=e^{-\frac{\beta}{2M}V(X)}\int_{(\dom)^3}k_T(X,X_3)k_T(X_3,X_2)k_T(X_2,X_1)e^{-\frac{\beta}{M}\left(V(X_3)+V(X_2)+\frac{V(X_1)}{2}\right)}\left(h_M^{M-3}\psi\right)(X_1)\mathrm{d}X_1\mathrm{d}X_2\mathrm{d}X_3
 \\
 &\vdots
 \\
-&=h_M e^{-\frac{\beta}{2M}V(X)} \int_{(\dom)^{M-1}} \left(\prod_{i=1}^{M-1}\mathrm{d}X_i\right)\mathrm{d}X_i k_T(X,X_{M-1})\ldots k_T(X_2,X_1) e^{-\frac{\beta}{M}\left(\frac{V(X_1)}{2}+\sum_{i=2}^{M-1}V(X_i)\right)}\psi(X_1)
+&=e^{-\frac{\beta}{2M}V(X)} \int_{(\dom)^{M-1}} \left(\prod_{i=1}^{M-1}\mathrm{d}X_i\right)\mathrm{d}X_i k_T(X,X_{M-1})\ldots k_T(X_2,X_1) e^{-\frac{\beta}{M}\left(\frac{V(X_1)}{2}+\sum_{i=2}^{M-1}V(X_i)\right)}\left(h_M\psi\right)(X_1)
 \\
 &= e^{-\frac{\beta}{2M}V(X)}\int_{(\dom)^{M}}\left(\prod_{i=1}^{M}\mathrm{d}X_i\right) k_T(X,X_{M})\ldots k_T(X_2,X_1) e^{-\frac{\beta}{M}\left(\frac{V(X_1)}{2}+\sum_{i=2}^{M}V(X_i)\right)}\psi(X_1)
 \\
 &=\frac{1}{(2\pi\sigma^2)^\frac{dNM}{2}}\int_{(\dom)^M} \left(\prod_{i=1}^{M}\mathrm{d}X_i\right) e^{-\frac{1}{2\sigma^2}\sum_{i=1}^{M}|X_{i+1}-X_i|^2-\frac{\beta}{M}\left(\frac{V(X_{M+1})+V(X_1)}{2}+\sum_{i=2}^{M}V(X_i)\right)}\psi(X_1)
 \\
-&=\frac{1}{(2\pi\sigma^2)^\frac{dNM}{2}}\int_{(\dom)^M} \left(\prod_{i=1}^{M}\mathrm{d}X_i\right) e^{-\beta S_M(X,X_M,\ldots,X_1)}\psi(X_1)
+&=\frac{1}{(2\pi\sigma^2)^\frac{dNM}{2}}\int_{(\dom)^M} \left(\prod_{i=1}^{M}\mathrm{d}X_i\right) e^{-\beta \mathcal{V}(X,X_1,\ldots,X_M)}\psi(X_1),
 \end{align*}
 
-En ayant posé $X=X_{M+1}$ et :
+où l'on a posé $X_0=X$ et :
 \begin{equation}
-S_M(X,X_M,\ldots,X_1)= \frac{1}{2\beta\sigma^2}\sum_{i=1}^M|X_{i+1}-X_i|^2+\frac{1}{M}\left(\frac{V(X)+V(X_1)}{2}+\sum_{i=2}^M V(X_i)\right)
+\mathcal{V}\left(X_0,X_1,\ldots,X_M\right)= \frac{1}{2\beta\sigma^2}\sum_{i=0}^{M-1}|X_{i+1}-X_i|^2+\frac{1}{M}\left(\frac{V(X_0)+V(X_1)}{2}+\sum_{i=1}^{M-1} V(X_i)\right)
 \end{equation}
 
-$S_M$ s'interprête comme la pseudo-action de $M$ systèmes à $N$ particules, où les particules intéragissent entre elles au sein d'un même système, comme on le voit dans la somme des $V(X_i)$, et d'un système au suivant avec elles mêmes, à travers le terme en $\sum \frac{|X_{i}-X_{i+1}|^2}{2\beta\sigma^2}$.
+$\mathcal{V}$ s'interprête comme l'énergie potentielle de $M+1$ systèmes à $N$ particules, où les particules intéragissent entre elles au sein d'un même système, comme on le voit dans la somme des $V(X_i)$, et d'un système au suivant avec elles mêmes, à travers le terme en $\sum \frac{|X_{i}-X_{i+1}|^2}{2\beta\sigma^2}$.
 
 Ainsi nous avons immédiatement que 
 \begin{equation}
-(h_M^M\phi)(X)=\int_{\dom}k_h(X,X_1)\mathrm{d}X_1
+(h_M^M\phi)(X)=\int_{\dom}k_h(X,X')\mathrm{d}X'
 \end{equation}
 Avec 
 \begin{equation}
-k_h(X,X')=\frac{1}{(2\pi\sigma^2)^\frac{dNM}{2}}\int_{(\dom)^{M-1}} \left(\prod_{i=2}^{M}\mathrm{d}X_i\right) e^{-\beta S_M(X,X_M,\ldots,X')}
+k_h(X,X')=\frac{1}{(2\pi\sigma^2)^\frac{dNM}{2}}\int_{(\dom)^{M-1}} \left(\prod_{i=1}^{M-1}\mathrm{d}X_i\right) e^{-\beta \mathcal{V}(X,X_1,\ldots,X_{M-1},X')}
 \end{equation}
 
-Nous pouvons enfin calculer la fonction de partition du système :
+Nous pouvons enfin calculer la fonction de partition du système pour $M$ suffisament grand :
 \begin{align*}
-Z(\beta)=Tr(e^{-\beta H})& \simeq Tr(h_M^M)
+Z(\beta)=\mathrm{Tr}(e^{-\beta H})& \simeq \mathrm{Tr}(h_M^M)
 \\
 &= \int_{\dom}\mathrm{d}X k_h(X,X)
 \\
