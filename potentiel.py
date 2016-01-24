@@ -96,7 +96,7 @@ def gen_part(beta,deltat,start,stop, delta=0.15):
 delta = 0.15
 
 beta = 10
-deltat= 0.01
+deltat= 0.001
 start = 0.
 stop = 10.
 
@@ -110,6 +110,21 @@ plt.hist(path_x)
 
 fig = plt.figure(5)
 plt.plot(path_x)
+
+fig = plt.figure(6)
+ax = fig.add_subplot(111,projection='3d')
+hist, xedges, yedges = np.histogram2d(path_x,path_y, bins=4)
+
+elements = (len(xedges)-1)*(len(yedges)-1)
+xpos, ypos = np.meshgrid(xedges[:-1] + 0.25, yedges[:-1] + 0.25)
+xpos = xpos.flatten()
+ypos = ypos.flatten()
+zpos = np.zeros(elements)
+dx = 0.25 * np.ones_like(zpos)
+dy = dx.copy()
+dz = hist.flatten()
+
+ax.bar3d(xpos, ypos, zpos, dx, dy, dz, color='b', zsort='average')
 
 plt.show()
 
