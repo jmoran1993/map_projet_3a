@@ -54,6 +54,13 @@ def gradV(x,y,delta):
 	return -np.asarray([dblipn(0,0.5+delta,x)*blipn(0,0.5+delta,y)+0.5*dblipn(0.5-delta,1,x)*blipn(0.5-delta,1,y), \
 		dblipn(0,0.5+delta,y)*blipn(0,0.5+delta,x)+0.5*dblipn(0.5-delta,1,y)*blipn(0.5-delta,1,x)])
 
+#definition de la distance entre deux particules, compte tenue de la periodicite
+def dist(x1,y1,x2,y2):
+	d1=(2*(x2-x1) % 1)/2
+	d2=(2*(y2-y1) % 1)/2
+	return sqrt((d1)**2+(d2)**2)
+
+
 def gen_part(beta,deltat,start,stop, delta=0.15):
 	sigma=np.sqrt(2./beta)
 	x0=np.asarray([np.random.uniform(),np.random.uniform()])
