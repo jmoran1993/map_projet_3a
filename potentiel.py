@@ -62,6 +62,8 @@ def dminsq(x1,x2):
 def dist(x1,y1,x2,y2):
 	return math.sqrt(dminsq(x1,x2)+dminsq(y1,y2))
 
+def w(x1,y1,x2,y2,k=1):
+	return k*dist(x1,y1,x2,y2)**2
 
 def gen_part(beta,deltat,start,stop, delta=0.15):
 	sigma=np.sqrt(2./beta)
@@ -98,20 +100,26 @@ def gen_part(beta,deltat,start,stop, delta=0.15):
 delta = 0.15
 
 beta = 50
-deltat= 0.001
+deltat= 0.01
 start = 0.
 stop = 10.
 
 path_x,path_y = gen_part(beta,deltat,start,stop)
 
+V_path = [V(x,y,delta) for x in path_x for y in path_y ]
+
+fig = plt.figure(2)
+plt.plot(V_path)
+
 fig = plt.figure(3)
 plt.scatter(np.asarray(path_x),np.asarray(path_y))
+
 
 fig = plt.figure(4)
 plt.hist(path_x)
 
 fig = plt.figure(5)
-plt.plot(path_x)
+plt.plot(path_y)
 
 fig = plt.figure(6)
 ax = fig.add_subplot(111,projection='3d')
@@ -122,7 +130,7 @@ xpos, ypos = np.meshgrid(xedges[:-1] + 0.25, yedges[:-1] + 0.25)
 xpos = xpos.flatten()
 ypos = ypos.flatten()
 zpos = np.zeros(elements)
-dx = 0.25 * np.ones_like(zpos)
+dx = 0.1 * np.ones_like(zpos)
 dy = dx.copy()
 dz = hist.flatten()
 
