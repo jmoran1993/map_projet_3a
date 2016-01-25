@@ -60,7 +60,7 @@ def dminsq(x1,x2):
 	return min((x1-x2)**2,(x1-x2-1)**2,(x1-x2+1)**2)
 
 def dist(x1,y1,x2,y2):
-	return sqrt(dminsq(x1,x2)+dminsq(y1,y2))
+	return math.sqrt(dminsq(x1,x2)+dminsq(y1,y2))
 
 
 def gen_part(beta,deltat,start,stop, delta=0.15):
@@ -70,7 +70,7 @@ def gen_part(beta,deltat,start,stop, delta=0.15):
 	path_y =[x0[1]]
 	x_t=x0
 	for t in np.arange(start,stop,deltat):
-		x_temp = x_t  - delta*gradV(x_t[0],x_t[1], delta) + sigma*np.sqrt(deltat)*np.random.normal(0,1,(2)) 
+		x_temp = x_t  - deltat*gradV(x_t[0],x_t[1], delta) + sigma*np.sqrt(deltat)*np.random.normal(0,1,(2)) 
 		x_temp = x_temp % 1 
 		ratio = np.exp(-beta*(V(x_temp[0],x_temp[1],delta)-V(x_t[0],x_t[1],delta)))
 		ptrans = min(1,ratio)
@@ -97,7 +97,7 @@ def gen_part(beta,deltat,start,stop, delta=0.15):
 
 delta = 0.15
 
-beta = 10
+beta = 50
 deltat= 0.001
 start = 0.
 stop = 10.
