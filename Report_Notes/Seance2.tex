@@ -1,7 +1,7 @@
 \documentclass[11pt]{article}
 %\usepackage[coverpage]{polytechnique}
 \usepackage[utf8]{inputenc}     
-\usepackage{amsmath}
+\usepackage{amsmath, amssymb}
 \usepackage{amsfonts}
 \usepackage[francais]{babel}
 \usepackage[version=3]{mhchem}
@@ -14,6 +14,14 @@
 \usepackage{pgfplots}
 %\usepackage[hidelinks]{hyperref}
 \usepackage{subcaption}
+\usepackage{amsthm}
+
+\theoremstyle{definition}
+
+\newtheorem{definition}{Definition}[section]
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
 
 
 %\title{Notes for Seance 2}
@@ -23,7 +31,50 @@
 \begin{document} 
 \maketitle 
 
-Dans cette partie, nous allons abo
+Dans cette partie, nous allons aborder une façon probabiliste pour trouver le noyau $k_{\beta}(x, x')$ que nous avons trouvé avec le formule de Trotter dans la section précédente. Avant de commencer le calcul de ce noyau, nous allons introduire quelques notions qui nous serviront dans la suite. 
 
+\section{Ergodicité}
 
+\theoremstyle{definition}
+
+\begin{definition}{Processus de Markov}
+
+La séquence $(\mathrm{X_n})_{n \in \mathbb{N}}$ est un processus de Markov défini sur $\mathbb{R} ^ {d}$ par rapport à la mesure de probabilité $\varphi$ si $\forall$ fonction $f \in \mathcal{C}_{0}$ tendant vers 0 à $\infty$, la limite suivante existe (presque sûrement): 
+
+\[ \mathrm{E}_{\varphi}(f) = \lim_{\mathrm{N}\to\infty} \frac{1}{\mathrm{N}} \sum_{n=1}^{\infty} f(\mathrm{X_n}) \]
+
+et on note $\mathrm{E}_{\varphi}(f)$ l’espérance par rapport à la mesure $\varphi$
+
+\end{definition}
+
+\begin{definition}{Ergodicité}
+
+Un processus est ergodique si il satisfait les conditions suivantes:
+
+\begin{itemize}
+
+\item 
+
+$\varphi$ est une mesure de probabilité invariant par le processus de Markov 
+
+\item 
+
+\textbf{Condition d'accessibilité}: $\forall$ $\mathrm{B} \in \mathcal{B}(\mathbb{R}^d)$ telle que $\varphi(\mathrm{B}) > 0$ et $\forall x \in \mathbb{R}^d$ , $\exists n \in \mathbb{N}$ telle que
+
+\[ \mathbb{P}(\mathrm{X}_n \in \mathcal{B} | \mathrm{X}_0 =n ) > 0\]
+
+\end{itemize}
+
+\end{definition}
+
+\begin{remark}
+\begin{enumerate}
+\item 
+Nous avons defini les notions d'ergodicité sur $\mathbb{R}^d$, mais les memes definitions restent vraies pour le tore $\Pi^d$ aussi.
+\item 
+Quand nous ferons les simulations en utilisant l'algorithme de Metroplois, il nous suffira de verifier que la probabilité de transfert pour l'algorithme de Metropolis satisfait la condition d'accessibilité dans la definition d'ergodicité.
+
+\end{enumerate}
+\end{remark}
 \end{document} 
+
