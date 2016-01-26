@@ -1,3 +1,4 @@
+import time
 import matplotlib as mpl
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
@@ -35,20 +36,34 @@ def dEvect(x):
 def blip(a,b,x):
 	return E(a-x)*E(x-b)
 
+def blipvect(a,b,x):
+	return Evect(a-x)*Evect(x-b)
+
 #derivee du blip
 def dblip(a,b,x):
 	return -dE(a-x)*E(x-b)+E(a-x)*dE(x-b)
+
+def dblipvect(a,b,x):
+	return -dEvect(a-x)*Evect(x-b)+Evect(a-x)*dE(x-b)
 
 #blip normalise, son max vaut 1
 def blipn(a,b,x):
 	return blip(a,b,x)*np.exp(1.6/(b-a))	
 
+def blipnvect(a,b,x):
+	return blipvect(a,b,x)*np.exp(1.6/(b-a))
+
 def dblipn(a,b,x):
 	return dblip(a,b,x)*np.exp(1.6/(b-a))
 
+def dblipnvect(a,b,x):
+	return dblip(a,b,x)*np.exp(1.6/(b-a))
 #definition du potentiel, deux puits dont le recouvrement est defini par delta
 def V(x,y,delta):
 	return -(blipn(0,0.5+delta,x)*blipn(0,0.5+delta,y)+0.5*blipn(0.5-delta,1,x)*blipn(0.5-delta,1,y))
+
+def Vvect(x,y,delta):
+	return -(blipnvect(0,0.5+delta,x)*blipnvect(0,0.5+delta,y)+0.5*blipnvect(0.5-delta,1,x)*blipnvect(0.5-delta,1,y))
 
 def gradV(x,y,delta):
 	return -np.asarray([dblipn(0,0.5+delta,x)*blipn(0,0.5+delta,y)+0.5*dblipn(0.5-delta,1,x)*blipn(0.5-delta,1,y), \
@@ -106,36 +121,53 @@ stop = 10.
 
 path_x,path_y = gen_part(beta,deltat,start,stop)
 
-V_path = [V(x,y,delta) for x in path_x for y in path_y ]
+colors = np.zeros(len(path_x))
+colors[0]=10
+
+# V_path = [V(x,y,delta) for x in path_x for y in path_y ]
+
+# fig = plt.figure(2)
+# plt.plot(V_path)
 
 fig = plt.figure(2)
-plt.plot(V_path)
+plt.hist(path_x)
 
 fig = plt.figure(3)
-plt.scatter(np.asarray(path_x),np.asarray(path_y))
+# plt.scatter(np.asarray(path_x),np.asarray(path_y))
+plt.axis([0,1,0,1])
+plt.ion()
 
+x_plot = np.linspace(0,1,200)
+y_plot = np.linspace(0,1,200)
+x_mesh, y_mesh = np.meshgrid(x_plot, y_plot)
+z_plot=Vvect(x_mesh, y_mesh, delta)
+plt.contour(x_plot,y_plot,z_plot)
 
 fig = plt.figure(4)
-plt.hist(path_x)
+plt.plot(path_x)
 
 fig = plt.figure(5)
 plt.plot(path_y)
 
-fig = plt.figure(6)
-ax = fig.add_subplot(111,projection='3d')
-hist, xedges, yedges = np.histogram2d(path_x,path_y, bins=4)
+# fig = plt.figure(6)
+# ax = fig.add_subplot(111,projection='3d')
+# hist, xedges, yedges = np.histogram2d(path_x,path_y, bins=4)
 
-elements = (len(xedges)-1)*(len(yedges)-1)
-xpos, ypos = np.meshgrid(xedges[:-1] + 0.25, yedges[:-1] + 0.25)
-xpos = xpos.flatten()
-ypos = ypos.flatten()
-zpos = np.zeros(elements)
-dx = 0.1 * np.ones_like(zpos)
-dy = dx.copy()
-dz = hist.flatten()
+# elements = (len(xedges)-1)*(len(yedges)-1)
+# xpos, ypos = np.meshgrid(xedges[:-1] + 0.25, yedges[:-1] + 0.25)
+# xpos = xpos.flatten()
+# ypos = ypos.flatten()
+# zpos = np.zeros(elements)
+# dx = 0.1 * np.ones_like(zpos)
+# dy = dx.copy()
+# dz = hist.flatten()
 
-ax.bar3d(xpos, ypos, zpos, dx, dy, dz, color='b', zsort='average')
+# ax.bar3d(xpos, ypos, zpos, dx, dy, dz, color='b', zsort='average')
 
 plt.show()
 
-print V(0.25,0.25,delta)
+plt.figure(3)
+for i in range(len(path_x)):
+	plt.scatter(path_x[i],path_y[i])
+	plt.draw()
+	time.sleep(0.000001)
