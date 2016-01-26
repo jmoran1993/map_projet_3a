@@ -1,5 +1,5 @@
 \documentclass[11pt]{article}
-%\usepackage[coverpage]{polytechnique}
+%\usepackage[titlepage]{polytechnique}
 \usepackage[utf8]{inputenc}     
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -13,7 +13,7 @@
 \usepackage{tikz}
 \usetikzlibrary{arrows} 
 \usepackage{pgfplots}
-%\usepackage[hidelinks]{hyperref}
+%\usepackage[hidelinks,hyperfootnotes=false]{hyperref}
 \usepackage{subcaption}
 \usepackage{amsthm}
 
@@ -193,10 +193,33 @@ v(\beta, x) &= g(x)
 
 Nous considérons la derivee totale $\mathrm{d}(v(t, \mathrm{X}_{t}) e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s})$ où $\mathrm{X}_{t}$ est defini en \ref{define_xt}. En utilisant le \ref{develop_ito_x}, nous trouvons que :
 
-\begin{align}
-(\frac{\partial v}{\partial t} + \frac{1}{2} \Delta v + b \nabla v - \mathrm{V}v) e^{(-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s)} + \nabla v(t, \mathrm{X}_{t}) \mathrm{dW}_{t}
-\end{align} 
+\begin{multline}
+\begin{split}
+\mathrm{d}(v(t, \mathrm{X}_{t}) e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s}) = (\frac{\partial v}{\partial t} + b \nabla v + \frac{1}{2}v - \mathrm{V}v)e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s} \\
++ \nabla v(t, \mathrm{X}_t)\mathrm{dW}_{t} e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s}
+\end{split}
+\end{multline}
 
+Ici, le premier terme est zero du à \ref{kolmo_back}. Donc:
+
+\begin{align}
+\mathrm{d}(v(t, \mathrm{X}_{t}) e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s}) = \nabla v(t, \mathrm{X}_t)\mathrm{dW}_{t} e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s}
+\end{align}
+
+Finalement nous remarquons que l'esperance de $\nabla v(t, \mathrm{X}_t)\mathrm{dW}_{t} e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s}$ est égale à zero, et donc par çommutation des opérations et d'esperance, nous avons que pour toute valeur de $\beta > 0$: 
+
+\begin{align}
+\mathbb{E}(v(\beta , \mathrm{X}_{\beta})e^{-\int_0^{\beta} \mathrm{V}(\mathrm{X}_{s}}) = \mathrm{Constant}
+\end{align}
+
+Donc, nous avons que: 
+
+\begin{align}
+\mathbb{E}(v(\beta , \mathrm{X}_{\beta})e^{-\int_0^{\beta} \mathrm{V}(\mathrm{X}_{s})}) &= \mathbb{E}(v(0, \mathrm{X}_0)) \\
+\mathbb{E}(g(x_{\beta}))e^{-\int_0^{\beta} \mathrm{V}(\mathrm{X}_{s})}) &= \int_{\Omega} v(0,x) f(x) \mathrm{d}x
+\end{align}
+
+où nous avons utilisé la condition initiale de \ref{kolmo_back} et l'integration porte sur le ouvert $\Omega$ consideré. 
 
 
 
