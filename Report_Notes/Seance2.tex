@@ -287,6 +287,21 @@ Nous remarquons que pour $b=0$, $\left(e^{-\beta \mathrm{H}} f \right)(x)$ est l
 \int_{\Omega X \Omega} k_{\beta}(x,y) f(y)g(x) \mathrm{d}x\mathrm{d}y = \mathbb{E}\left( g(x_{\beta}) e^{-\int_{0}^{\beta} \mathrm{V}(x_s)\mathrm{d}s} \right)
 \end{equation}
 
+Puisque cette derniere condition est vraie pour toute fonction $f$, nous prenons $f(y) = \delta(y)$, la fonction de Dirac. Dans ce cas, nous avons pour le processus stochastiques $\mathrm{X}_{t}$ que $\mathrm{X}_{\beta} = y + \mathrm{W}_{\beta}$. D'où:
+
+\begin{align}
+\begin{split}
+\int_{\Omega} k_{\beta}(x,y) g(x) \mathrm{d}x &= \mathbb{E}\left( g(y+\mathrm{W}_{\beta}) e^{-\int_{0}^{\beta} \mathrm{V}(y+\mathrm{W}_s) \mathrm{d}s} \right) \\
+&= \int_{\Omega} g(x) \mathbb{E}_{y+\mathrm{W}_{\beta}=x} \left( e^{-\int_{0}^{\beta} \mathrm{V}(y+\mathrm{W}_{s}) \mathrm{d}s} \right) \mathrm{d}x
+\end{split}
+\end{align}
+
+Alors nous identifions le noyau comme étant 
+
+\begin{empheq}[box=\widefbox]{align}
+\label{noyau_esperance}
+k_{\beta}(x,y) = \mathbb{E}_{y+\mathrm{W}_{\beta}=x} \left( e^{-\int_{0}^{\beta} \mathrm{V}(y+\mathrm{W}_{s}) \mathrm{d}s} \right)
+\end{empheq}
 
 \end{document} 
 
