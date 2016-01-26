@@ -71,15 +71,15 @@ $\varphi$ est une mesure de probabilité invariant par le processus de Markov
 \begin{remark}
 \begin{enumerate}
 \item 
-Nous avons defini les notions d'ergodicité sur $\mathbb{R}^d$, mais les memes definitions restent vraies pour le tore $\Pi^d$ aussi.
+Nous avons défini les notions d'ergodicité sur $\mathbb{R}^d$, mais les mêmes définitions restent vraies pour le tore $\Pi^d$ aussi.
 \item 
-Quand nous ferons les simulations en utilisant l'algorithme de Metroplois, il nous suffira de verifier que la probabilité de transfert pour l'algorithme de Metropolis satisfait la condition d'accessibilité dans la definition d'ergodicité.
+Quand nous ferons les simulations en utilisant l'algorithme de Metropolis, il nous suffira de vérifier que la probabilité de transfert pour l'algorithme de Metropolis satisfait la condition d'accessibilité dans la définition d'ergodicité.
 
 \end{enumerate}
 \end{remark}
 
 
-\begin{definition}{\textbf{Chaines de Markov}}
+\begin{definition}{\textbf{Chaînes de Markov}}
 
 Une chaîne de Markov (discrète) est un processus de Markov défini par:
 
@@ -88,10 +88,10 @@ Une chaîne de Markov (discrète) est un processus de Markov défini par:
 \mathrm{X}_{0}^{\Delta t} &= f(x) 
 \end{align}
 
-où $x \in \mathbb{R}^d$ et  $b: \mathbb{R}^d \to \mathbb{R}^d$ est une fonction reguliere. Ici $\xi_{j} \sim \mathcal{N}(0,1)_{\mathbb{R}^d}$, c'est à dire que $\xi_{j}$ est un vecteur gaussien de dimension $d$. 
+où $x \in \mathbb{R}^d$ et  $b: \mathbb{R}^d \to \mathbb{R}^d$ est une fonction régulière. Ici $\xi_{j} \sim \mathcal{N}(0,1)_{\mathbb{R}^d}$, c'est à dire que $\xi_{j}$ est un vecteur gaussien de dimension $d$. 
 \end{definition}
 
-A partir d'une chaine de Markov discrete nous pouvons construit une chaine de Markov en temps continu en liant les instants de temps $t_n$ et $t_{n+1}$ de manière affine. Dans ce cas, nous avons avec les memes conditions que ci-dessus $\forall t \in [t_n, t_{n+1}]$:
+A partir d'une chaîne de Markov discrète nous pouvons construit une chaîne de Markov en temps continu en liant les instants de temps $t_n$ et $t_{n+1}$ de manière affine. Dans ce cas, nous avons avec les mêmes conditions que ci-dessus $\forall t \in [t_n, t_{n+1}]$:
 
 \begin{align}
 \tilde{\mathrm{X}}_{t}^{\Delta t} &= \mathrm{X}_{n}^{\Delta t} + (t-t_n) \mathrm{X}_{n+1}^{\Delta t} \\
@@ -103,11 +103,96 @@ Le processus $\tilde{\mathrm{X}}_{t}^{\Delta t}$ a une limite:
 \lim_{\Delta t \to\infty} \tilde{\mathrm{X}}_{t}^{\Delta t} = \mathrm{X}_{t}
 \end{align} 
 
-où $\mathrm{X}_{t}$ suit l'equation differentielle stochastique donné par: 
+où $\mathrm{X}_{t}$ suit l’équation différentielle stochastique donné par: 
 
-\begin{align} 
+\begin{align}
+\label{equ_stoch_x}
 \mathrm{dX}_{t} = b(\mathrm{X}_{t})\mathrm{d}t + \mathrm{dW}_{t}
 \end{align}
+
+
+\section{Formule d'Itô}
+
+A la fin de la section précédente, nous avons abouti à une équation différentielle stochastique qui détermine la chaîne de Markov en temps continus. Pour faciliter la résolution de cette équation nous allons mettre en place quelques formules de calcul différentiel stochastique qui nous permettront d'aboutir à la formule de Feynman-Kac. 
+
+Tout d'abord nous allons considérer l’équation \ref{equ_stoch_x} mais sans le terme stochastique $\mathrm{dW}_{t}$. Dans ce cas, l'équation devient déterministe dont nous notons la solution $\mathrm{Y}_t$ et qui suit l'équation:
+
+\[ \frac{\mathrm{dY}_{t}}{\mathrm{d}t} = b(\mathrm{Y}_t) \]
+
+Pour rester simple nous allons travailler en $\mathbb{R}$ mais les résultats sont généralisables pour $\mathrm{R}^d$. Soit $h$ une fonction mesurable allant de $\Omega$ ouvert de $\mathbb{R}$ dans $\mathbb{R}$. Alors, 
+
+\begin{align*}
+\mathrm{d}(h(\mathrm{Y}_{t})) &= \nabla h(\mathrm{Y}_{t}) \mathrm{dY}_{t} \\
+&= \nabla h(\mathrm{Y}_{t}) b(\mathrm{Y}_{t})
+\end{align*}
+
+Dans le cas de $\mathrm{X}_{t}$ nous devons développer la dernière équation jusqu'à deuxième ordre afin de faire apparaître le terme d'Itô. 
+
+\begin{align}
+\label{develop_ito_x}
+\mathrm{d}(h(\mathrm{X}_{t})) &= \nabla_{x} h(\mathrm{X}_{t}) \mathrm{dX}_{t} + \frac{1}{2} \Delta_{x} h(\mathrm{X}_{t}) \mathrm{d}t + \frac{\partial h(t, \mathrm{X}_{t})}{\partial t}\mathrm{d}t \\
+h(t+\Delta t, \mathrm{X}(t+\Delta t)) &= h(t+\Delta t, \mathrm{X}_{t} + b(\mathrm{X}_{t})\Delta t + \sqrt{\Delta t} \xi_{n}) \\
+&= h(t, \mathrm{X}_{t}) + \frac{\mathrm{d}h}{\mathrm{d}t}(t,\mathrm{X}_{t})\Delta t + \nabla_{x} h(t, \mathrm{X}_{t})  b(\mathrm{X}_{t}) \Delta t \\
+&+ \nabla_{x} (t, \Delta t) \xi_{n} \sqrt{\Delta t} + \frac{\Delta t}{2} \sum_{i,j} \xi_{i} \xi_{j} \frac{\partial^2 h}{\partial x_i \partial x_j}
+\end{align}
+
+En développant $h(t+\Delta t, \mathrm{X}(t+\Delta t))$ nous trouvons:
+
+\begin{multline}
+h(t+\Delta t, \mathrm{X}(t+\Delta t)) = h(t, \mathrm{X}_{t}) + \frac{\mathrm{d}h}{\mathrm{d}t}(t,\mathrm{X}_{t})\Delta t + \nabla_{x} h(t, \mathrm{X}_{t})  b(\mathrm{X}_{t}) \Delta t \\
++ \nabla_{x} (t, \Delta t) \xi_{n} \sqrt{\Delta t} + \frac{\Delta t}{2} \sum_{i,j} \xi_{i} \xi_{j} \frac{\partial^2 h}{\partial x_i \partial x_j}
+\end{multline}
+
+Nous remarquons que le terme stochastique qui sera dominant est en $\sqrt{\Delta t}$ et le terme dominant déterministe est de l'ordre $\Delta t$. Donc, nous ne prenons pas en compte le terme de double dérivé et ainsi nous aboutissons à l’équation suivante:
+
+\begin{multline}
+\label{h_final}
+h(t+\Delta t, \mathrm{X}(t+\Delta t)) = h(t, \mathrm{X}_{t}) + \frac{\mathrm{d}h}{\mathrm{d}t}(t,\mathrm{X}_{t})\Delta t \\ + \nabla_{x} h(t, \mathrm{X}_{t})  b(\mathrm{X}_{t}) \Delta t + \nabla_{x} (t, \Delta t) \xi_{n} \sqrt{\Delta t}
+\end{multline}
+
+\section{Le Formule de Feynman-Kac}
+
+Une fois que nous savons comment faire le calcul differentiel avec des variables stochastiques, nous sommes en mesure de deriver le formule de Feynman-Kac. 
+
+Pour ce faire, nous introduisons tout d'abord, deux equations dites l'equation de Kolmogorov forward et l'equation de Kolmogorov backward. 
+
+\begin{definition}{\textbf{L'equation de Kolmogorov forward}}
+
+\begin{equation}
+\label{kolmo_forw}
+\begin{split}
+\frac{\partial u}{\partial t} &= \frac{1}{2} \Delta u - \mathrm{div}(bu) - \mathrm{V}u \\
+u(0) &= f(x)
+\end{split}
+\end{equation}
+
+\end{definition}
+
+Soit $\mathrm{X}_{t}$ un processus stochastique défini par  
+\begin{equation}
+\label{define_xt}
+\begin{split}
+\mathrm{dX}_{t} &= b(\mathrm{X}_{t}) + \mathrm{dW}_{t}\\
+\mathrm{X}_{t}(0) &= f(x)\mathrm{d}x
+\end{split}
+\end{equation}
+
+Donc, nous introduisons l'équation adjointe de Kolmogorov forward:
+
+\begin{definition}{\textbf{L'Equation de Kolmogorov Backward}}
+Soit $g$ une fonction allant de $\Omega$ ouvert de $\mathbb{R}$ dans $\mathbb{R}$ reguliere borne. Soit $\beta$ qui noté comme un instant de temps finale. 
+
+\begin{equation}
+\label{kolmo_back}
+\begin{split}
+\frac{\partial v}{\partial t} + \frac{1}{2} \Delta v + b \nabla v - \mathrm{V}v &= 0 \\
+v(\beta, x) &= g(x)
+\end{split}
+\end{equation}
+\end{definition}
+
+
+
 
 
 \end{document} 
