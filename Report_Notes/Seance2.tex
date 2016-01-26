@@ -287,7 +287,7 @@ Nous remarquons que pour $b=0$, $\left(e^{-\beta \mathrm{H}} f \right)(x)$ est l
 \int_{\Omega X \Omega} k_{\beta}(x,y) f(y)g(x) \mathrm{d}x\mathrm{d}y = \mathbb{E}\left( g(x_{\beta}) e^{-\int_{0}^{\beta} \mathrm{V}(x_s)\mathrm{d}s} \right)
 \end{equation}
 
-Puisque cette derniere condition est vraie pour toute fonction $f$, nous prenons $f(y) = \delta(y)$, la fonction de Dirac. Dans ce cas, nous avons pour le processus stochastiques $\mathrm{X}_{t}$ que $\mathrm{X}_{\beta} = y + \mathrm{W}_{\beta}$. D'où:
+Puisque cette dernière condition est vraie pour toute fonction $f$, nous prenons $f(y) = \delta(y)$, la fonction de Dirac. Dans ce cas, nous avons pour le processus stochastiques $\mathrm{X}_{t}$ que $\mathrm{X}_{\beta} = y + \mathrm{W}_{\beta}$. D'où:
 
 \begin{align}
 \begin{split}
@@ -303,5 +303,37 @@ Alors nous identifions le noyau comme étant
 k_{\beta}(x,y) = \mathbb{E}_{y+\mathrm{W}_{\beta}=x} \left( e^{-\int_{0}^{\beta} \mathrm{V}(y+\mathrm{W}_{s}) \mathrm{d}s} \right)
 \end{empheq}
 
+Dans notre cas, nous nous intéressons au calcul de la fonction de partition $Z = \mathrm{Tr}(e^{-\beta \mathrm{H}})$, qui selon la seance 1 s'écrt comme: 
+
+\begin{align}
+\label{partition_func_martingale}
+\begin{split}
+Z &= \mathrm{Tr}(e^{-\beta \mathrm{H}}) = \int_{\Omega} k_{\beta}(x,x) \mathrm{d}x \\
+&= \int_{\Omega} \mathbb{E}_{\mathrm{W}_{\beta} =0} \left( e^{-\int_{0}^{\beta} \mathrm{V}(x+\mathrm{W}_{s})} \right)
+\end{split}
+\end{align}
+
+\begin{remark}
+Ici, nous devons interpréter les deux termes dans la dernière relation çi-dessus. Tout d'abord, prenons $\mathbb{E}_{\mathrm{W}_{\beta}}$. Ce terme est le terme d’espérance sur les ponts browniens, c'est à dire une espérance sur tous chemins allant de point de départ $x_0$ à temps $t=0$ jusqu'au un moment $\beta$ où encore une fois $x_{\beta}=x_0$. 
+
+Le deuxième terme en exponentiel représente la création ou annihilation des particules à un point $x+\mathrm{W}_{s}$ donné. Donc, nous formons une image de ce processus comme suivant: 
+
+\begin{enumerate} 
+
+\item 
+
+Le particule commence son trajet à t=0 à $x=x_0 = 0$. Nous allons regarder seulement les trajets qui finissent à un temps $t=\beta$ de telle sorte que $x_\beta = 0$.
+
+\item 
+
+Pendant ce trajet, le particule peut être détruit ou crée selon le poids $e^{-\int_{0}^{\beta} \mathrm{V}(x+\mathrm{W}_{s})}$. 
+
+\item 
+
+L’espérance sur tous ces trajets nous donne la fonction de partition $Z = \mathrm{Tr}(e^{-\beta \mathrm{H}}$. 
+\end{enumerate}
+
+
+\end{remark}
 \end{document} 
 
