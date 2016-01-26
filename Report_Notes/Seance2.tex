@@ -272,6 +272,21 @@ d'où nous avons le formule de Feynman-Kac
 \int_{\Omega} g(x) u(\beta,x) \mathrm{d}x &= \mathbb{E}\left( g(x_{\beta}) e^{-\int_{0}^{\beta} \mathrm{V}(x_s)\mathrm{d}s} \right)
 \end{empheq}
 
+\section{Application au problème d'intégrale de chemin} 
+
+Nous revenons sur notre problème de départ qui est de trouver le noyau d'operateur $e^{-\beta \mathrm{H}}$. Nous rappelons que le noyau est une fonction $k_{\beta}(x,y)$ telle que:
+
+\begin{equation}
+\label{def_noyau} 
+\left(e^{-\beta \mathrm{H}} f \right)(x) = \int_{\Omega} k_{\beta}(x,y) f(y) \mathrm{d}y
+\end{equation}
+
+Nous remarquons que pour $b=0$, $\left(e^{-\beta \mathrm{H}} f \right)(x)$ est la solution de \ref{kolmo_forw}. D'où nous avons, en utilisant le formule \ref{feynman_kac}:
+
+\begin{equation}
+\int_{\Omega X \Omega} k_{\beta}(x,y) f(y)g(x) \mathrm{d}x\mathrm{d}y = \mathbb{E}\left( g(x_{\beta}) e^{-\int_{0}^{\beta} \mathrm{V}(x_s)\mathrm{d}s} \right)
+\end{equation}
+
 
 \end{document} 
 
