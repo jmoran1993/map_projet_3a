@@ -16,7 +16,11 @@
 %\usepackage[hidelinks,hyperfootnotes=false]{hyperref}
 \usepackage{subcaption}
 \usepackage{amsthm}
+\usepackage{empheq}
 
+\usepackage{geometry}
+
+\newcommand*\widefbox[1]{\fbox{\hspace{2em}#1\hspace{2em}}}
 \theoremstyle{definition}
 
 \newtheorem{definition}{Definition}[section]
@@ -152,9 +156,9 @@ h(t+\Delta t, \mathrm{X}(t+\Delta t)) = h(t, \mathrm{X}_{t}) + \frac{\mathrm{d}h
 
 \section{Le Formule de Feynman-Kac}
 
-Une fois que nous savons comment faire le calcul differentiel avec des variables stochastiques, nous sommes en mesure de deriver le formule de Feynman-Kac. 
+Une fois que nous savons comment faire le calcul différentiel avec des variables stochastiques, nous sommes en mesure de dériver le formule de Feynman-Kac. 
 
-Pour ce faire, nous introduisons tout d'abord, deux equations dites l'equation de Kolmogorov forward et l'equation de Kolmogorov backward. 
+Pour ce faire, nous introduisons tout d'abord, deux équations dites l’équation de Kolmogorov forward et l'equation de Kolmogorov backward. 
 
 \begin{definition}{\textbf{L'equation de Kolmogorov forward}}
 
@@ -180,7 +184,8 @@ Soit $\mathrm{X}_{t}$ un processus stochastique défini par
 Donc, nous introduisons l'équation adjointe de Kolmogorov forward:
 
 \begin{definition}{\textbf{L'Equation de Kolmogorov Backward}}
-Soit $g$ une fonction allant de $\Omega$ ouvert de $\mathbb{R}$ dans $\mathbb{R}$ reguliere borne. Soit $\beta$ qui noté comme un instant de temps finale. 
+
+Soit $g$ une fonction allant de $\Omega$ ouvert de $\mathbb{R}$ dans $\mathbb{R}$ régulière bornée. Soit $\beta$ qui noté comme un instant de temps finale. 
 
 \begin{equation}
 \label{kolmo_back}
@@ -191,7 +196,7 @@ v(\beta, x) &= g(x)
 \end{equation}
 \end{definition}
 
-Nous considérons la derivee totale $\mathrm{d}(v(t, \mathrm{X}_{t}) e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s})$ où $\mathrm{X}_{t}$ est defini en \ref{define_xt}. En utilisant le \ref{develop_ito_x}, nous trouvons que :
+Nous considérons la dérivée totale $\mathrm{d}(v(t, \mathrm{X}_{t}) e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s})$ où $\mathrm{X}_{t}$ est défini en \ref{define_xt}. En utilisant le \ref{develop_ito_x}, nous trouvons que :
 
 \begin{multline}
 \begin{split}
@@ -200,13 +205,13 @@ Nous considérons la derivee totale $\mathrm{d}(v(t, \mathrm{X}_{t}) e^{-\int_0^
 \end{split}
 \end{multline}
 
-Ici, le premier terme est zero du à \ref{kolmo_back}. Donc:
+Ici, le premier terme est zéro du à \ref{kolmo_back}. Donc:
 
 \begin{align}
 \mathrm{d}(v(t, \mathrm{X}_{t}) e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s}) = \nabla v(t, \mathrm{X}_t)\mathrm{dW}_{t} e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s}
 \end{align}
 
-Finalement nous remarquons que l'esperance de $\nabla v(t, \mathrm{X}_t)\mathrm{dW}_{t} e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s}$ est égale à zero, et donc par çommutation des opérations et d'esperance, nous avons que pour toute valeur de $\beta > 0$: 
+Finalement nous remarquons que l’espérance de $\nabla v(t, \mathrm{X}_t)\mathrm{dW}_{t} e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s}$ est égale à zéro, et donc par commutation des opérations et d’espérance, nous avons que pour toute valeur de $\beta > 0$: 
 
 \begin{align}
 \mathbb{E}(v(\beta , \mathrm{X}_{\beta})e^{-\int_0^{\beta} \mathrm{V}(\mathrm{X}_{s}}) = \mathrm{Constant}
@@ -219,8 +224,53 @@ Donc, nous avons que:
 \mathbb{E}(g(x_{\beta}))e^{-\int_0^{\beta} \mathrm{V}(\mathrm{X}_{s})}) &= \int_{\Omega} v(0,x) f(x) \mathrm{d}x
 \end{align}
 
-où nous avons utilisé la condition initiale de \ref{kolmo_back} et l'integration porte sur le ouvert $\Omega$ consideré. 
+où nous avons utilisé la condition initiale de \ref{kolmo_back} et l’intégration porte sur le ouvert $\Omega$ considéré. 
 
+Considérons maintenant $\int_{\Omega} v(0,x) f(x) \mathrm{d}x$. Par la condition initiale de \ref{kolmo_forw}, nous avons:
+
+\begin{equation}
+\int_{\Omega} v(0,x) f(x) \mathrm{d}x = \int_{\Omega} v(0,x) u(0,x) \mathrm{d}x
+\end{equation}
+
+D'où:
+
+\begin{align}
+\label{expansion_integral_vu}
+\begin{split}
+\int_{\Omega} v(0,x) u(0,x) \mathrm{d}x &= \int_{\Omega} v(\beta, x) u(\beta,x) \mathrm{d}x - \int_{0}^{\beta} \frac{\mathrm{d}}{\mathrm{d}t}\left(\int_{\Omega} v(t,x) u(t,x) \mathrm{d}x \right) \mathrm{d}t \\
+&= \int_{\Omega} v(\beta, x) u(\beta,x) \mathrm{d}x - \int_{0}^{\beta} \left( \int_{\Omega} \frac{\partial v}{\partial t} u \mathrm{d}x + \frac{\partial u}{\partial v} \mathrm{d}x \right) \mathrm{d}t
+\end{split}
+\end{align}
+
+Nous avons remarqué que les équations \ref{kolmo_forw} et \ref{kolmo_back} étaient les adjoints l'un de l'autre. En d'autre terme pour si L est un opérateur différentiel et L* son opérateur adjoint, nous avons que 
+
+\begin{align}
+\label{adjoint_conditions}
+\begin{split}
+\frac{\partial u}{\partial t} &= \mathrm{L}u  \\
+\frac{\partial v}{\partial t} &= -\mathrm{L}^{*}v
+\end{split}
+\end{align}
+
+Donc les intégrales portants sur $\Omega$ ne sont que les normes $L^2$. En d'autres termes nous avons:
+\begin{align}
+- \int_{0}^{\beta} \left( \int_{\Omega} \frac{\partial v}{\partial t} u \mathrm{d}x + \frac{\partial u}{\partial v} \mathrm{d}x \right) \mathrm{d}t &= 
+- \int_{0}^{\beta} \left( (-\mathrm{L}^{*}v,u)_{L^2} + (v, \mathrm{L}u)_{L^2} \right) \mathrm{d}t &= 0
+\end{align}
+
+Alors, nous trouvons que: 
+
+\begin{align*}
+\int_{\Omega} v(\beta, x) u(\beta, x) \mathrm{d}x &= \int_{\Omega} v(0,x) f(x) \mathrm{d}x \\
+\int_{\Omega} g(x) u(\beta, x) \mathrm{d}x &= \int_{\Omega} v(0,x) f(x) \mathrm{d}x
+\end{align*}
+
+d'où nous avons le formule de Feynman-Kac 
+
+\begin{empheq}[box=\widefbox]{align}
+\label{feynman_kac}
+\int_{\Omega} g(x) u(\beta,x) \mathrm{d}x &= \mathbb{E}\left( g(x_{\beta}) e^{-\int_{0}^{\beta} \mathrm{V}(x_s)\mathrm{d}s} \right)
+\end{empheq}
 
 
 \end{document} 
