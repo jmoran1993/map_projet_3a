@@ -66,7 +66,10 @@ $\varphi$ est une mesure de probabilité invariant par le processus de Markov
 
 \textbf{Condition d'accessibilité}: $\forall$ $\mathrm{B} \in \mathcal{B}(\mathbb{R}^d)$ telle que $\varphi(\mathrm{B}) > 0$ et $\forall x \in \mathbb{R}^d$ , $\exists n \in \mathbb{N}$ telle que
 
-\[ \mathbb{P}(\mathrm{X}_n \in \mathcal{B} | \mathrm{X}_0 =n ) > 0\]
+\begin{equation}
+\label{condition_access}
+\mathbb{P}(\mathrm{X}_n \in \mathcal{B} | \mathrm{X}_0 =n ) > 0
+\end{equation}
 
 \end{itemize}
 
@@ -119,9 +122,13 @@ où $\mathrm{X}_{t}$ suit l’équation différentielle stochastique donné par:
 
 A la fin de la section précédente, nous avons abouti à une équation différentielle stochastique qui détermine la chaîne de Markov en temps continus. Pour faciliter la résolution de cette équation nous allons mettre en place quelques formules de calcul différentiel stochastique qui nous permettront d'aboutir à la formule de Feynman-Kac. 
 
-Tout d'abord nous allons considérer l’équation \ref{equ_stoch_x} mais sans le terme stochastique $\mathrm{dW}_{t}$. Dans ce cas, l'équation devient déterministe dont nous notons la solution $\mathrm{Y}_t$ et qui suit l'équation:
+Tout d'abord nous allons considérer l’équation \eqref{equ_stoch_x} mais sans le terme stochastique $\mathrm{dW}_{t}$. Dans ce cas, l'équation devient déterministe dont nous notons la solution $\mathrm{Y}_t$ et qui suit l'équation:
 
-\[ \frac{\mathrm{dY}_{t}}{\mathrm{d}t} = b(\mathrm{Y}_t) \]
+\begin{equation*}
+\frac{\mathrm{dY}_{t}}{\mathrm{d}t} = b(\mathrm{Y}_t)
+\end{equation*}
+
+
 
 Pour rester simple nous allons travailler en $\mathbb{R}$ mais les résultats sont généralisables pour $\mathrm{R}^d$. Soit $h$ une fonction mesurable allant de $\Omega$ ouvert de $\mathbb{R}$ dans $\mathbb{R}$. Alors, 
 
@@ -181,6 +188,8 @@ Soit $\mathrm{X}_{t}$ un processus stochastique défini par
 \end{split}
 \end{equation}
 
+où nous définisssons le mouvement brownien avec le terme $\mathrm{W}_t$
+
 Donc, nous introduisons l'équation adjointe de Kolmogorov forward:
 
 \begin{definition}{\textbf{L'Equation de Kolmogorov Backward}}
@@ -196,7 +205,7 @@ v(\beta, x) &= g(x)
 \end{equation}
 \end{definition}
 
-Nous considérons la dérivée totale $\mathrm{d}(v(t, \mathrm{X}_{t}) e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s})$ où $\mathrm{X}_{t}$ est défini en \ref{define_xt}. En utilisant le \ref{develop_ito_x}, nous trouvons que :
+Nous considérons la dérivée totale $\mathrm{d}(v(t, \mathrm{X}_{t}) e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s})$ où $\mathrm{X}_{t}$ est défini en \eqref{define_xt}. En utilisant le \eqref{develop_ito_x}, nous trouvons que :
 
 \begin{multline}
 \begin{split}
@@ -205,7 +214,7 @@ Nous considérons la dérivée totale $\mathrm{d}(v(t, \mathrm{X}_{t}) e^{-\int_
 \end{split}
 \end{multline}
 
-Ici, le premier terme est zéro du à \ref{kolmo_back}. Donc:
+Ici, le premier terme est zéro du à \eqref{kolmo_back}. Donc:
 
 \begin{align}
 \mathrm{d}(v(t, \mathrm{X}_{t}) e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s}) = \nabla v(t, \mathrm{X}_t)\mathrm{dW}_{t} e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s}
@@ -224,9 +233,9 @@ Donc, nous avons que:
 \mathbb{E}(g(x_{\beta}))e^{-\int_0^{\beta} \mathrm{V}(\mathrm{X}_{s})}) &= \int_{\Omega} v(0,x) f(x) \mathrm{d}x
 \end{align}
 
-où nous avons utilisé la condition initiale de \ref{kolmo_back} et l’intégration porte sur le ouvert $\Omega$ considéré. 
+où nous avons utilisé la condition initiale de \eqref{kolmo_back} et l’intégration porte sur le ouvert $\Omega$ considéré. 
 
-Considérons maintenant $\int_{\Omega} v(0,x) f(x) \mathrm{d}x$. Par la condition initiale de \ref{kolmo_forw}, nous avons:
+Considérons maintenant $\int_{\Omega} v(0,x) f(x) \mathrm{d}x$. Par la condition initiale de \eqref{kolmo_forw}, nous avons:
 
 \begin{equation}
 \int_{\Omega} v(0,x) f(x) \mathrm{d}x = \int_{\Omega} v(0,x) u(0,x) \mathrm{d}x
@@ -242,7 +251,7 @@ D'où:
 \end{split}
 \end{align}
 
-Nous avons remarqué que les équations \ref{kolmo_forw} et \ref{kolmo_back} étaient les adjoints l'un de l'autre. En d'autre terme pour si L est un opérateur différentiel et L* son opérateur adjoint, nous avons que 
+Nous avons remarqué que les équations \eqref{kolmo_forw} et \eqref{kolmo_back} étaient les adjoints l'un de l'autre. En d'autre terme pour si L est un opérateur différentiel et L* son opérateur adjoint, nous avons que 
 
 \begin{align}
 \label{adjoint_conditions}
@@ -281,7 +290,7 @@ Nous revenons sur notre problème de départ qui est de trouver le noyau d'opera
 \left(e^{-\beta \mathrm{H}} f \right)(x) = \int_{\Omega} k_{\beta}(x,y) f(y) \mathrm{d}y
 \end{equation}
 
-Nous remarquons que pour $b=0$, $\left(e^{-\beta \mathrm{H}} f \right)(x)$ est la solution de \ref{kolmo_forw}. D'où nous avons, en utilisant le formule \ref{feynman_kac}:
+Nous remarquons que pour $b=0$, $\left(e^{-\beta \mathrm{H}} f \right)(x)$ est la solution de \eqref{kolmo_forw}. D'où nous avons, en utilisant le formule \eqref{feynman_kac}:
 
 \begin{equation}
 \int_{\Omega X \Omega} k_{\beta}(x,y) f(y)g(x) \mathrm{d}x\mathrm{d}y = \mathbb{E}\left( g(x_{\beta}) e^{-\int_{0}^{\beta} \mathrm{V}(x_s)\mathrm{d}s} \right)
