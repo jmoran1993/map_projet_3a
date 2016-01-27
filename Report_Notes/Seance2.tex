@@ -1,0 +1,363 @@
+\documentclass[11pt]{article}
+%\usepackage[titlepage]{polytechnique}
+\usepackage[utf8]{inputenc}     
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage[francais]{babel}
+\usepackage[version=3]{mhchem}
+\usepackage{epstopdf}
+\usepackage[justification=centering]{caption}
+\usepackage{slashbox}
+\usepackage[T1]{fontenc}
+\usepackage{tikz}
+\usetikzlibrary{arrows} 
+\usepackage{pgfplots}
+%\usepackage[hidelinks,hyperfootnotes=false]{hyperref}
+\usepackage{subcaption}
+\usepackage{amsthm}
+\usepackage{empheq}
+
+\usepackage{geometry}
+
+\newcommand*\widefbox[1]{\fbox{\hspace{2em}#1\hspace{2em}}}
+\theoremstyle{definition}
+
+\newtheorem{definition}{Definition}[section]
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+
+%\title{Notes for Seance 2}
+\title{On Brownian Motion, Ito Calculus and the Feynman-Kac Formula}
+
+
+\begin{document} 
+\maketitle 
+
+Dans cette partie nous décrirons une méthode probabiliste pour évaluer le noyau $k_{\beta}$ que nous avons décrit dans la section précédente. 
+Avant de commencer le calcul de $k_{\beta}$, nous allons introduire quelques notions utiles.
+
+\section{Definitions}
+
+\theoremstyle{definition}
+
+\begin{definition}{\textbf{Processus de Markov}}
+
+La séquence $(\mathrm{X_n})_{n \in \mathbb{N}}$ est un processus de Markov défini sur $\mathbb{R} ^ {d}$ par rapport à la mesure de probabilité $\varphi$ si pour toute fonction $f$ de classe $ \mathcal{C}^{0}$ tendant vers $0$ à l'infini, la limite suivante existe (presque sûrement): 
+
+\begin{equation}
+\frac{1}{N}\sum_{n=1}^N f(X_n) \overset{N\rightarrow \infty}{\underset{p.s.}{\longrightarrow}} \mathbb{E}_\varphi(f)
+\end{equation}
+
+
+où l'on a noté $\mathbb{E}_{\varphi}(f)$ l’espérance de f par rapport à la mesure $\varphi$.
+
+\end{definition}
+
+\begin{definition}{\textbf{Ergodicité}}
+
+Un processus est ergodique s'il satisfait les conditions suivantes :
+
+\begin{itemize}
+
+\item 
+
+$\varphi$ est une mesure de probabilité invariante par le processus de Markov. 
+
+\item 
+
+\textbf{Condition d'accessibilité}: 
+
+\begin{align}
+\forall \mathrm{B} \in \mathcal{B}(\mathbb{R}^d)\quad \mathrm{t.q.}\quad \varphi(\mathrm{B})>0, \quad \forall x\in\mathbb{R}^d, \quad \exists n\in\mathbb{N} \quad \mathrm{t.q.}\quad \mathbb{P}(\mathrm{X}_n \in \mathcal{B} | \mathrm{X}_0 =n ) > 0 
+\end{align}
+\end{itemize}
+
+\end{definition}
+
+\begin{remark}
+\begin{enumerate}
+\item 
+Nous avons défini la notion d'ergodicité sur $\mathbb{R}^d$, mais les mêmes définitions restent valables pour $\mathrm{L}\mathbb{T}^d$.
+\item 
+Au moment de simuler avec l'algorithme de Metropolis, il suffira de vérifier que la probabilité de transfert pour cet algorithme satisfait la condition d'accessibilité dans la définition d'ergodicité.
+
+\end{enumerate}
+\end{remark}
+
+
+\begin{definition}{\textbf{Chaînes de Markov}}
+
+Une chaîne de Markov (discrète) est un processus de Markov défini par :
+
+\begin{equation}
+\left\{ 
+  \begin{array}{ll}
+  \mathrm{X}_{n+1}^{\Delta t} &= \mathrm{X}_{n}^{\Delta t} + b(\mathrm{X}_{n}^{\Delta t}) + \sqrt{\Delta t} \xi_{n}
+  \\
+  \mathrm{X}_{0}^{\Delta t} &= f(x) 
+  \end{array}
+\right.
+\end{equation}
+
+
+
+avec $x \in \mathbb{R}^d$ et $b: \mathbb{R}^d \to \mathbb{R}^d$ une fonction régulière. Ici $\xi_{j} \sim \mathcal{N}(0,1)_{\mathbb{R}^d}$, i.e. $\xi_{j}$ est un vecteur gaussien de dimension $d$. 
+\end{definition}
+
+À partir d'une chaîne de Markov discrète nous pouvons construire une chaîne de Markov en temps continu en reliant les instants de temps $t_n$ et $t_{n+1}$ de manière affine. Dans ce cas, nous avons avec les mêmes conditions que ci-dessus :
+
+\begin{align}
+\forall t \in [t_n,t_{n+1}],\quad\tilde{\mathrm{X}}_{t}^{\Delta t} &= \mathrm{X}_{n}^{\Delta t} + (t-t_n) \mathrm{X}_{n+1}^{\Delta t} 
+\end{align}
+
+Nous avons de même 
+\begin{equation}
+\tilde{\mathrm{X}}_{t}^{\Delta t} \underset{\Delta t \to 0}{\longrightarrow} \mathrm{X}_t
+\end{equation}
+
+
+où $\mathrm{X}_{t}$ suit l’équation différentielle stochastique donnée par: 
+
+\begin{align}
+\label{equ_stoch_x}
+\mathrm{dX}_{t} = b(\mathrm{X}_{t})\mathrm{d}t + \mathrm{dW}_{t}
+\end{align}
+
+
+COMMENT : ou $\mathrm{d}W$ représente quoi ??? Un bruit blanc ? Il faut l'expliciter ! 
+
+\section{Formule d'Itô}
+
+A la fin de la section précédente, nous avons abouti à une équation différentielle stochastique qui détermine la chaîne de Markov en temp continu. Pour faciliter la résolution de cette équation, nous  mettrons en place des formules de calcul différentiel stochastique qui nous permettront d'aboutir à la formule de Feynman-Kac. 
+
+Considérons d'bord l’équation \ref{equ_stoch_x} sans le terme stochastique $\mathrm{dW}_{t}$. Dans ce cas, l'équation devient déterministe et sa solution $\mathrm{Y}_t$ suit l'équation:
+
+\begin{equation}
+\frac{\mathrm{dY}_{t}}{\mathrm{d}t} = b(\mathrm{Y}_t) 
+\end{equation}
+
+Pour rester dans un cadre simple, nous travaillerons dans $\mathbb{R}$, mais les résultats sont bien évidemment généralisables sur $\mathrm{R}^d$. Soit $h$ une fonction mesurable allant de $\Omega$ un ouvert de $\mathbb{R}$ dans $\mathbb{R}$. Alors nous avons : 
+
+\begin{align*}
+\mathrm{d}(h(\mathrm{Y}_{t})) &= \nabla h(\mathrm{Y}_{t}) \mathrm{dY}_{t} \\
+&= \nabla h(\mathrm{Y}_{t}) b(\mathrm{Y}_{t})\mathrm{d}t
+\end{align*}
+
+Dans le cas de $\mathrm{X}_{t}$, solution de l'équation différentielle stochastique, nous devons développer la dernière équation jusqu'à deuxième ordre afin de faire apparaître le terme d'Itô.  
+
+%Il faudrait faire en sorte que les numéros aparaissent pour tout le développement et pas pour chaque ligne.
+
+\begin{align}
+\label{develop_ito_x}
+\mathrm{d}(h(\mathrm{X}_{t})) &= \nabla_{x} h(\mathrm{X}_{t}) \mathrm{dX}_{t} + \frac{1}{2} \Delta_{x} h(\mathrm{X}_{t}) \mathrm{d}t + \frac{\partial h(t, \mathrm{X}_{t})}{\partial t}\mathrm{d}t \\
+h(t+\Delta t, \mathrm{X}(t+\Delta t)) &= h(t+\Delta t, \mathrm{X}_{t} + b(\mathrm{X}_{t})\Delta t + \sqrt{\Delta t} \xi_{n}) \\
+&= h(t, \mathrm{X}_{t}) + \frac{\mathrm{d}h}{\mathrm{d}t}(t,\mathrm{X}_{t})\Delta t + \nabla_{x} h(t, \mathrm{X}_{t})  b(\mathrm{X}_{t}) \Delta t \\
+&+ \nabla_{x} (t, \Delta t) \xi_{n} \sqrt{\Delta t} + \frac{\Delta t}{2} \sum_{i,j} \xi_{i} \xi_{j} \frac{\partial^2 h}{\partial x_i \partial x_j}+o(\Delta t)
+\end{align}
+
+En faisant un développement de Taylor au premier ordre de $h(t+\Delta t, \mathrm{X}(t+\Delta t))$ nous trouvons:
+
+\begin{multline}
+h(t+\Delta t, \mathrm{X}(t+\Delta t)) = h(t, \mathrm{X}_{t}) + \frac{\mathrm{d}h}{\mathrm{d}t}(t,\mathrm{X}_{t})\Delta t + \nabla_{x} h(t, \mathrm{X}_{t})  b(\mathrm{X}_{t}) \Delta t \\
++ \nabla_{x} (t, \Delta t) \xi_{n} \sqrt{\Delta t} + \frac{\Delta t}{2} \sum_{i,j} \xi_{i} \xi_{j} \frac{\partial^2 h}{\partial x_i \partial x_j}+o(\Delta t)
+\end{multline}
+
+Nous remarquons que le terme stochastique qui sera dominant est en $\sqrt{\Delta t}$ et le terme dominant déterministe est de l'ordre $\Delta t$. Nous ne prenons donc pas en compte les dérivées d'ordre 2 et aboutissons à l’équation suivante:
+
+\begin{multline}
+\label{h_final}
+h(t+\Delta t, \mathrm{X}(t+\Delta t)) = h(t, \mathrm{X}_{t}) + \frac{\mathrm{d}h}{\mathrm{d}t}(t,\mathrm{X}_{t})\Delta t \\ + \nabla_{x} h(t, \mathrm{X}_{t})  b(\mathrm{X}_{t}) \Delta t + \nabla_{x} (t, \Delta t) \xi_{n} \sqrt{\Delta t}
+\end{multline}
+
+\section{Le Formule de Feynman-Kac}
+
+Munis des règles du calcul différentiel, nous sommes maintenant en mesure de dériver la formule de Feynman-Kac.
+
+Pour ce faire, nous introduisons deux équations : les équations de Kolmogorov forward et backward 
+
+\begin{definition}{\textbf{L'equation de Kolmogorov forward}}
+Elle est définie par : 
+
+%Il faut expliciter le domaine, j'imagine ? Ou la classe de u ? 
+\begin{equation}
+\label{kolmo_forw}
+\begin{split}
+\frac{\partial u}{\partial t} &= \frac{1}{2} \Delta u - \mathrm{div}(bu) - \mathrm{V}u \\
+u(0) &= f(x)
+\end{split}
+\end{equation}
+
+\end{definition}
+
+Soit alors $\mathrm{X}_{t}$ un processus stochastique défini par  
+\begin{equation}
+\label{define_xt}
+\begin{split}
+\mathrm{dX}_{t} &= b(\mathrm{X}_{t}) + \mathrm{dW}_{t}\\
+\mathrm{X}_{t}(0) &= f(x)\mathrm{d}x
+\end{split}
+\end{equation}
+
+Donc, nous introduisons l'équation adjointe de Kolmogorov forward:
+
+\begin{definition}{\textbf{L'Equation de Kolmogorov Backward}}
+
+Soit $g$ une fonction allant de $\Omega$ ouvert de $\mathbb{R}$ dans $\mathbb{R}$ régulière bornée. Soit $\beta$ qui noté comme un instant de temps finale. 
+
+\begin{equation}
+\label{kolmo_back}
+\begin{split}
+\frac{\partial v}{\partial t} + \frac{1}{2} \Delta v + b \nabla v - \mathrm{V}v &= 0 \\
+v(\beta, x) &= g(x)
+\end{split}
+\end{equation}
+\end{definition}
+
+Nous considérons la dérivée totale $\mathrm{d}(v(t, \mathrm{X}_{t}) e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s})$ où $\mathrm{X}_{t}$ est défini en \eqref{define_xt}. En utilisant l'équation \eqref{develop_ito_x}, nous trouvons que :
+
+\begin{multline}
+\begin{split}
+\mathrm{d}(v(t, \mathrm{X}_{t}) e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s}) = (\frac{\partial v}{\partial t} + b \nabla v + \frac{1}{2}v - \mathrm{V}v)e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s} \\
++ \nabla v(t, \mathrm{X}_t)\mathrm{dW}_{t} e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s}
+\end{split}
+\end{multline}
+
+le premier terme est nul d'après \eqref{kolmo_back}. Donc :
+
+\begin{align}
+\mathrm{d}(v(t, \mathrm{X}_{t}) e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s}) = \nabla v(t, \mathrm{X}_t)\mathrm{dW}_{t} e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s}
+\end{align}
+
+Enfin nous remarquons que l’espérance de $\nabla v(t, \mathrm{X}_t)\mathrm{dW}_{t} e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s}$ est nulle, et en utilisant la commutation des différentes opérations avec l’espérance, nous avons ainsi que pour tout $\beta > 0$: 
+
+\begin{align}
+\mathbb{E}(v(\beta , \mathrm{X}_{\beta})e^{-\int_0^{\beta} \mathrm{V}(\mathrm{X}_{s}}) = \mathrm{cte}
+\end{align}
+
+Et enfin :
+
+\begin{align}
+\mathbb{E}(v(\beta , \mathrm{X}_{\beta})e^{-\int_0^{\beta} \mathrm{V}(\mathrm{X}_{s})}) &= \mathbb{E}(v(0, \mathrm{X}_0)) \\
+\mathbb{E}(g(x_{\beta}))e^{-\int_0^{\beta} \mathrm{V}(\mathrm{X}_{s})}) &= \int_{\Omega} v(0,x) f(x) \mathrm{d}x
+\end{align}
+
+où nous avons utilisé la condition initiale de \eqref{kolmo_back} et où l’intégration porte sur l'ouvert $\Omega$ considéré. 
+
+Considérons maintenant l'intégrale $\int_{\Omega} v(0,x) f(x) \mathrm{d}x$. Par la condition initiale de \eqref{kolmo_forw}, nous avons par conséquent :
+
+\begin{equation}
+\int_{\Omega} v(0,x) f(x) \mathrm{d}x = \int_{\Omega} v(0,x) u(0,x) \mathrm{d}x
+\end{equation}
+
+D'où:
+
+\begin{align}
+\label{expansion_integral_vu}
+\begin{split}
+\int_{\Omega} v(0,x) u(0,x) \mathrm{d}x &= \int_{\Omega} v(\beta, x) u(\beta,x) \mathrm{d}x - \int_{0}^{\beta} \frac{\mathrm{d}}{\mathrm{d}t}\left(\int_{\Omega} v(t,x) u(t,x) \mathrm{d}x \right) \mathrm{d}t \\
+&= \int_{\Omega} v(\beta, x) u(\beta,x) \mathrm{d}x - \int_{0}^{\beta} \left( \int_{\Omega} \frac{\partial v}{\partial t} u \mathrm{d}x + \frac{\partial u}{\partial v} \mathrm{d}x \right) \mathrm{d}t
+\end{split}
+\end{align}
+
+Nous remarquons alors que les problèmes \eqref{kolmo_forw} et \eqref{kolmo_back} sont l'adjoint l'un de l'autre. En d'autres termes, si $L$ est un opérateur différentiel et $L*$ son opérateur adjoint, nous avons : 
+
+\begin{align}
+\label{adjoint_conditions}
+\begin{split}
+\frac{\partial u}{\partial t} &= \mathrm{L}u  \\
+\frac{\partial v}{\partial t} &= -\mathrm{L}^{*}v
+\end{split}
+\end{align}
+
+Les intégrales sur $\Omega$ sont ainsi les normes $\mathrm{L}^2$ des opérateurs. En d'autres termes :
+\begin{align}
+- \int_{0}^{\beta} \left( \int_{\Omega} \frac{\partial v}{\partial t} u \mathrm{d}x + \frac{\partial u}{\partial v} \mathrm{d}x \right) \mathrm{d}t &= 
+- \int_{0}^{\beta} \left( (-L^{*}v,u)_{\mathrm{L}^2} + (v, Lu)_{L^2} \right) \mathrm{d}t &= 0
+\end{align}
+
+Ainsi :
+
+\begin{align*}
+\int_{\Omega} v(\beta, x) u(\beta, x) \mathrm{d}x &= \int_{\Omega} v(0,x) f(x) \mathrm{d}x \\
+\int_{\Omega} g(x) u(\beta, x) \mathrm{d}x &= \int_{\Omega} v(0,x) f(x) \mathrm{d}x
+\end{align*}
+
+et on déduit la formule de Feynman-Kac : 
+
+\begin{empheq}[box=\widefbox]{align}
+\label{feynman_kac}
+\int_{\Omega} g(x) u(\beta,x) \mathrm{d}x &= \mathbb{E}\left( g(x_{\beta}) e^{-\int_{0}^{\beta} \mathrm{V}(x_s)\mathrm{d}s} \right)
+\end{empheq}
+
+\section{Application à notre problème} 
+
+Revenons sur notre problème de départ, qui est de trouver le noyau de l'opérateur $e^{-\beta H}$. Nous rappelons que le noyau est une fonction $k_{\beta}$ telle que:
+
+\begin{equation}
+\label{def_noyau} 
+\left(e^{-\beta H} f \right)(x) = \int_{\Omega} k_{\beta}(x,y) f(y) \mathrm{d}y
+\end{equation}
+
+Nous remarquons que, pour $b=0$, $e^{-\beta H} f$ est la solution de \eqref{kolmo_forw}. D'où en appliquant \eqref{feynman_kac} :
+
+\begin{equation}
+\int_{\Omega X \Omega} k_{\beta}(x,y) f(y)g(x) \mathrm{d}x\mathrm{d}y = \mathbb{E}\left( g(x_{\beta}) e^{-\int_{0}^{\beta} \mathrm{V}(x_s)\mathrm{d}s} \right)
+\end{equation}
+
+Cette dernière condition étant vraie pour tout $f$, nous prenons $f(y) = \delta(y)$, le delta de Dirac. Dans ce cas, nous avons pour le processus $\mathrm{X}_{t}$ : 
+\begin{equation}
+\mathrm{X}_{\beta} = y + \mathrm{W}_{\beta}
+\end{equation}. 
+
+D'où:
+
+\begin{align}
+\begin{split}
+\int_{\Omega} k_{\beta}(x,y) g(x) \mathrm{d}x &= \mathbb{E}\left( g(y+\mathrm{W}_{\beta}) e^{-\int_{0}^{\beta} V(y+\mathrm{W}_s) \mathrm{d}s} \right) \\
+&= \int_{\Omega} g(x) \mathbb{E}_{y+\mathrm{W}_{\beta}=x} \left( e^{-\int_{0}^{\beta} V(y+\mathrm{W}_{s}) \mathrm{d}s} \right) \mathrm{d}x
+\end{split}
+\end{align}
+
+Nous identifions alors le noyau comme étant : 
+
+\begin{empheq}[box=\widefbox]{align}
+\label{noyau_esperance}
+k_{\beta}(x,y) = \mathbb{E}_{y+\mathrm{W}_{\beta}=x} \left( e^{-\int_{0}^{\beta} V(y+\mathrm{W}_{s}) \mathrm{d}s} \right)
+\end{empheq}
+
+Dans notre cas, nous nous intéressons au calcul de la fonction de partition $Z = \mathrm{Tr}(e^{-\beta H})$, qui d'après ce qui précède s'écrit : 
+
+\begin{align}
+\label{partition_func_martingale}
+\begin{split}
+Z &= \mathrm{Tr}(e^{-\beta H}) = \int_{\Omega} k_{\beta}(x,x) \mathrm{d}x \\
+&= \int_{\Omega} \mathbb{E}_{\mathrm{W}_{\beta} =0} \left( e^{-\int_{0}^{\beta} V(x+\mathrm{W}_{s})} \right)
+\end{split}
+\end{align}
+
+\begin{remark}
+Nous devons interpréter les deux termes dans cette dernière relation. Prenons d'abord $\mathbb{E}_{\mathrm{W}_{\beta}}$. C'est le terme d’espérance sur les ponts browniens, c'est à dire une espérance sur tous les chemins allant de $x_0$ au temps $t=0$ jusqu'au un temps $\beta$ où l'on revient au point de départ $x_{\beta}=x_0$. 
+
+Le deuxième terme en exponentiel représente la création ou annihilation des particules à un point $x+\mathrm{W}_{s}$ donné. Nous formons donc une image de ce processus comme suivant : 
+
+\begin{enumerate} 
+
+\item 
+
+Le particule commence son trajet à $x_{t=0}=x_0 = 0$. Nous allons regarder seulement les trajets qui finissent à un temps $t=\beta$, de sorte que $x_\beta = 0$.
+
+\item 
+
+Pendant ce trajet, le particule peut être détruite ou créée selon le poids probabiliste $e^{-\int_{0}^{\beta} V(x+\mathrm{W}_{s})}$. 
+
+\item 
+
+L’espérance sur tous ces trajets nous donne la fonction de partition $Z = \mathrm{Tr}(e^{-\beta H}$. 
+\end{enumerate}
+
+
+\end{remark}
+\end{document} 
