@@ -154,39 +154,17 @@ def gen_2part(beta,deltat,start,stop,delta=0.15):
  		path_y2.append(x2_t[1])
 	return path_x1, path_y1, path_x2, path_y2
 
-# ax.plot_surface(x,y,z)
-
-# ax.set_xlabel('x')
-# ax.set_ylabel('y')
-# ax.set_zlabel('z')
-
-# plt.figure(2)
-# plt.contour(x,y,z)
-# plt.show()
 
 
 delta = 0.20
-
-beta = 10
-deltat= 0.001
+beta = 10.
+deltat = 0.001
 start = 0.
 stop = 10.
 
-path_x,path_y = gen_part(beta,deltat,start,stop,delta)
+path_x1, path_y1, path_x2, path_y2 = gen_2part(beta,deltat,start,stop,delta)
 
-colors = np.zeros(len(path_x))
-colors[0]=10
-
-# V_path = [V(x,y,delta) for x in path_x for y in path_y ]
-
-# fig = plt.figure(2)
-# plt.plot(V_path)
-
-fig = plt.figure(2)
-plt.hist(path_x)
-
-fig = plt.figure(3)
-# plt.scatter(np.asarray(path_x),np.asarray(path_y))
+fig = plt.figure(1)
 plt.axis([0,1,0,1])
 plt.ion()
 
@@ -196,31 +174,10 @@ x_mesh, y_mesh = np.meshgrid(x_plot, y_plot)
 z_plot=Vvect(x_mesh, y_mesh, delta)
 plt.contour(x_plot,y_plot,z_plot)
 
-fig = plt.figure(4)
-plt.plot(path_x)
-
-fig = plt.figure(5)
-plt.plot(path_y)
-
-# fig = plt.figure(6)
-# ax = fig.add_subplot(111,projection='3d')
-# hist, xedges, yedges = np.histogram2d(path_x,path_y, bins=4)
-
-# elements = (len(xedges)-1)*(len(yedges)-1)
-# xpos, ypos = np.meshgrid(xedges[:-1] + 0.25, yedges[:-1] + 0.25)
-# xpos = xpos.flatten()
-# ypos = ypos.flatten()
-# zpos = np.zeros(elements)
-# dx = 0.1 * np.ones_like(zpos)
-# dy = dx.copy()
-# dz = hist.flatten()
-
-# ax.bar3d(xpos, ypos, zpos, dx, dy, dz, color='b', zsort='average')
-
 plt.show()
 
-plt.figure(3)
-for i in range(len(path_x)):
-	if i % 10 == 0:
-		plt.scatter(path_x[i],path_y[i])
-		plt.draw()
+for i in range(len(path_x1)):
+	plt.scatter(path_x1[i],path_y1[i], color = 'blue')
+	plt.scatter(path_x2[i], path_y2[i], color = 'red')
+	plt.draw()
+	time.sleep(0.00000000000000001)
