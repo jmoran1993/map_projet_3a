@@ -14,7 +14,7 @@ def grad_potential(x, m=1.0, omega=1.0):
 
 ## global parameters
 
-tau = 5.0 ## imaginary time period
+tau = 1.0 ## imaginary time period
 M = 10 ## Number of time slices 
 delta_tau = tau/M ## imaginary time step
 
@@ -79,13 +79,13 @@ energy_sum = 0.0
 energy_squared_sum = 0.0 
 accepted_steps = 0
 for step in range(mc_steps):
-	if (step%1000 == 0) & step > 0:
+	if (step%1000 == 0) & (step > 0):
 		print "Performed {} steps".format(step)
 		print "Average Energy {}".format(energy_sum/(M*step))
 	for j in range(M):
 		if metropolis_step(pos_x_new, pos_x):
 			accepted_steps +=1
-		bin_pos = (pos_x_new[0]-x_min)/(x_max-x_min) * n_bins
+		bin_pos = int((pos_x_new[0]-x_min)/(x_max-x_min) * n_bins)
 		if (bin_pos >=0) & (bin_pos < M):
 			psi_2[bin_pos]  +=1
 		energy = potential(pos_x_new[0]) + 0.5*pos_x_new[0]*grad_potential(pos_x_new[0])
