@@ -14,8 +14,8 @@ def grad_potential(x, m=1.0, omega=1.0):
 
 ## global parameters
 
-tau = 10.0 ## imaginary time period
-M = 100 ## Number of time slices 
+tau = 5.0 ## imaginary time period
+M = 10 ## Number of time slices 
 delta_tau = tau/M ## imaginary time step
 
 n_bins = 100 ## for histogram 
@@ -72,13 +72,16 @@ for step in range(thermal_steps):
 
 print "Acceptance Rate {}".format(accepted_steps*1.0/(M*thermal_steps)*100)
 
-psi_2 = np.zeros((M)) ##Probability distribution of the particle 
+psi_2 = np.zeros((n_bins)) ##Probability distribution of the particle 
 
 print "Performing monte-carlo steps"
 energy_sum = 0.0
 energy_squared_sum = 0.0 
 accepted_steps = 0
 for step in range(mc_steps):
+	if (step%1000 == 0) & step > 0:
+		print "Performed {} steps".format(step)
+		print "Average Energy {}".format(energy_sum/(M*step))
 	for j in range(M):
 		if metropolis_step(pos_x_new, pos_x):
 			accepted_steps +=1
@@ -89,7 +92,7 @@ for step in range(mc_steps):
 		energy_sum += energy 
 		energy_squared_sum += energy*energy
 
-print "Acceptance Rate {}".format(accepted_steps*1.0/(M*thermal_steps)*100)
+print "Acceptance Rate {}".format(accepted_steps*1.0/(M*mc_steps)*100)
 
 steps = mc_steps*M 
 energy_average = energy_sum/steps 
