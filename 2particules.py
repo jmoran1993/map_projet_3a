@@ -76,16 +76,20 @@ def distance(x1,y1,x2,y2):
 def distanceNormale(x1,y1,x2,y2):
     return math.sqrt((x1-x2)**2+(y1-y2)**2)
 
+#potentiel d'interaction radial
 def interD(d,delta=0.20):
-    return -0.3*blipn(0.25,0.75,d)
+    return -0.3*blipn(0.25,0.75,d)+0.1*blipn(-0.15,0.15,d)
 
+#norme du gradient radial
 def gradInterD(d,delta=0.20):
-    return -0.3*dblipn(0.25,0.75,d)
+    return -0.3*dblipn(0.25,0.75,d)+0.1*dblipn(-0.25,0.25,d)
 
+#potentiel a deux particules
 def W(x1,y1,x2,y2,delta=0.20):
     d = distance(x1,y1,x2,y2)
     return interD(d, delta)
 
+#allege la notation
 def Wpart(p1,p2,delta):
     return W(p1[0],p1[1],p2[0],p2[1])
 
@@ -96,6 +100,7 @@ def gradW(x1,y1,x2,y2, delta=0.20):
     n = math.sqrt((x1-x)**2+(y1-y)**2)
     x = (x1-x)/ n
     y = (y1-y) / n
+    #x,y donne le vecteur direction de 2 vers 1
     return gradInterD(d)*x, gradInterD(d)*y
 
 def gradWpart(p1,p2,delta=0.20):
