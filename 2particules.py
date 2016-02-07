@@ -119,10 +119,12 @@ def gen2part(beta,deltat,start,stop,delta=0.15):
     for t in np.arange(start,stop,deltat):
         p1_temp = p1_t-deltat*(gradV(p1_t[0],p1_t[1],delta)+gradWpart(p1_t,p2_t,delta))\
             +sigma*np.sqrt(deltat)*np.random.normal(0,1,(2))
+        p1_temp[0], p1_temp[1] = p1_temp[0] % 1, p1_temp[1] % 1
         p2_temp = p2_t-deltat*(gradV(p2_t[0],p2_t[1],delta)+gradWpart(p2_t,p1_t,delta))\
             +sigma*np.sqrt(deltat)*np.random.normal(0,1,(2))
+        p2_temp[0], p2_temp[1] = p2_temp[0] % 1, p2_temp[1] % 1    
         ratio = np.exp(-beta*(Vpart(p1_temp,delta)+Vpart(p2_temp,delta)+Wpart(p1_temp,p2_temp,delta)\
-            -(Vpart(p1_t,delta)+Vpart(p2_t,delta)+Wpart(p1_t,p2_t,delta) ) ) )
+            -(Vpart(p1_t,delta)+Vpart(p2_t,delta)+Wpart(p1_t,p2_t,delta) ) ) )        
         ptrans = min(1,ratio)
         temp=np.random.uniform()
         if temp<ptrans:
@@ -145,13 +147,23 @@ stop = 10.
 path_x1, path_y1, path_x2, path_y2 = gen2part(beta,deltat,start,stop,delta)
 
 fig = plt.figure(1)
-plt.scatter(np.asarray(path_x1),np.asarray(path_y1), color='blue')
-plt.scatter(np.asarray(path_x2),np.asarray(path_y2), color='red')
+#plt.scatter(np.asarray(path_x1),np.asarray(path_y1), color='blue')
+#plt.scatter(np.asarray(path_x2),np.asarray(path_y2), color='red')
 plt.axis([0,1,0,1])
 x_plot = np.linspace(0,1,200)
 y_plot = np.linspace(0,1,200)
 x_mesh, y_mesh = np.meshgrid(x_plot, y_plot)
 z_plot=Vvect(x_mesh, y_mesh, delta)
 plt.contour(x_plot,y_plot,z_plot)
+plt.ion()
+text = plt.text(0.1,0.9, "Iteration : ")
 
 plt.show()
+
+plt.figure(1)
+for i in range(len(path_x1)):
+  if i % 20 == 0:
+    plt.scatter(path_x1[i],path_y1[i], color='green')
+    plt.scatter(path_x2[i],path_y2[i], color='red')
+    text.set_text("Iteration : "+str(i))
+    plt.draw()
