@@ -135,6 +135,8 @@ def gen_2part(beta,deltat,start,stop,delta=0.15):
 	path_y2 = [x2init[1]]
 	x1_t=x1init
 	x2_t=x2init
+	acc = 0
+	tot = 0
 	for t in np.arange(start,stop,deltat):
 		x1_temp = x1_t - deltat*(gradV(x1_t[0],x1_t[1],delta)+gradw(x1_t, x2_t))\
 		 + sigma*np.sqrt(deltat)*np.random.normal(0,1,(2))
@@ -145,13 +147,17 @@ def gen_2part(beta,deltat,start,stop,delta=0.15):
 	 	 -w(x1_t[0],x1_t[1],x2_t[0],x2_t[1])))
 	 	ptrans = min(1,ratio)
 	 	temp = np.random.uniform()
+	 	tot+=1
 	 	if temp<ptrans:
 	 		x1_t = x1_temp
 	 		x2_t = x2_temp
+	 		acc+=1
  		path_x1.append(x1_t[0])
  		path_y1.append(x1_t[1])
  		path_x2.append(x2_t[0])
  		path_y2.append(x2_t[1])
+	rate=acc/tot
+	print rate
 	return path_x1, path_y1, path_x2, path_y2
 
 # ax.plot_surface(x,y,z)
@@ -186,9 +192,9 @@ fig = plt.figure(2)
 plt.hist(path_x)
 
 fig = plt.figure(3)
-# plt.scatter(np.asarray(path_x),np.asarray(path_y))
+plt.scatter(np.asarray(path_x),np.asarray(path_y))
 plt.axis([0,1,0,1])
-plt.ion()
+# plt.ion()
 
 x_plot = np.linspace(0,1,200)
 y_plot = np.linspace(0,1,200)
@@ -219,8 +225,8 @@ plt.plot(path_y)
 
 plt.show()
 
-plt.figure(3)
-for i in range(len(path_x)):
-	if i % 10 == 0:
-		plt.scatter(path_x[i],path_y[i])
-		plt.draw()
+# plt.figure(3)
+# for i in range(len(path_x)):
+# 	if i % 10 == 0:
+# 		plt.scatter(path_x[i],path_y[i])
+# 		plt.draw()
