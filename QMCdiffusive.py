@@ -119,32 +119,33 @@ def quantInterGrad(p1,p2,beta,sigma):
 def gen2partQ(beta,deltat,start,stop,delta=0.15, M=10):
     sigma = np.sqrt(M*2./beta)
     #Definition des deux particules 
-    p1 = []
-    p2 = []
+    p1_0 = []
+    p2_0 = []
     for i in range(M):
-        p1.append([np.random.uniform(),np.random.uniform()])
-        p2.append([np.random.uniform(),np.random.uniform()])
+        p1_0.append([np.random.uniform(),np.random.uniform()])
+        p2_0.append([np.random.uniform(),np.random.uniform()])
     # p1[M-1]=p1[0]
     # p2[M-1]=p2[0]
     path_x1, path_y1, path_x2, path_y2 = [],[],[],[]
     for i in range(M):
-        path_x1.append([p1[i][0]])
-        path_y1.append([p1[i][1]])
-        path_x2.append([p2[i][0]])
-        path_y2.append([p2[i][1]])
-    p1_t=p1
-    p2_t=p2
+        path_x1.append([p1_0[i][0]])
+        path_y1.append([p1_0[i][1]])
+        path_x2.append([p2_0[i][0]])
+        path_y2.append([p2_0[i][1]])
+    print len(path_x1)
+    p1_t=p1_0
+    p2_t=p2_0
     #p1_t[i] = coordonnees de la ieme tranche de la 1ere particule au temps t
     for t in np.arange(start,stop,deltat):
         p1_temp = np.zeros((M,2))
         p2_temp = np.zeros((M,2))
         for i in range(M):
-            p1_temp[i]=p1_t[i]-deltat*(gradV(p1_t[i][0],p1_t[i][1],delta)+gradWpart(p1_t[i],p2_t[i],delta))\
+            p1_temp[i]=(p1_t[i]-deltat*(gradV(p1_t[i][0],p1_t[i][1],delta)+gradWpart(p1_t[i],p2_t[i],delta))\
             +sigma*np.sqrt(deltat)*np.random.normal(0,1,(2))\
-            -deltat*np.asarray(quantInterGrad(p1_t[i],p1_t[(i+1)%M],beta,sigma))
-            p2_temp[i]=p2_t[i]-deltat*(gradV(p1_t[i][0],p1_t[i][1],delta)+gradWpart(p2_t[i],p1_t[i],delta))\
-            +sigma.np.sqrt(deltat)*np.random.normal(0,1,(2))\
-            -deltat*np.asarray(quantInterGrad(p2_t[i],p2_t[(i+1)%M],beta,sigma))
+            -deltat*np.asarray(quantInterGrad(p1_t[i],p1_t[(i+1)%M],beta,sigma)))%1
+            p2_temp[i]=(p2_t[i]-deltat*(gradV(p1_t[i][0],p1_t[i][1],delta)+gradWpart(p2_t[i],p1_t[i],delta))\
+            +sigma*np.sqrt(deltat)*np.random.normal(0,1,(2))\
+            -deltat*np.asarray(quantInterGrad(p2_t[i],p2_t[(i+1)%M],beta,sigma)))%1
         energy_t = 0
         energy_temp = 0
         for i in range(M):
@@ -158,19 +159,31 @@ def gen2partQ(beta,deltat,start,stop,delta=0.15, M=10):
         if temp < ptrans:
             p1_t = p1_temp
             p2_t = p2_temp
-        for i in range(M):
+    for i in range(M):
             path_x1[i].append(p1_t[i][0])
             path_y1[i].append(p1_t[i][1])
             path_x2[i].append(p2_t[i][0])
             path_y2[i].append(p2_t[i][1])
-        return path_x1, path_y1, path_x2, path_y2
+    return path_x1, path_y1, path_x2, path_y2
 
 
 delta = 0.20
 
 beta = 10
-deltat= 0.001
+deltat= 0.01
 start = 0.
 stop = 10.
 
 path_x1, path_y1, path_x2, path_y2 = gen2partQ(beta,deltat,start,stop,delta)
+print path_x1[1]
+
+fig = plt.figure(1)
+plt.axis([0,1,0,1])
+x_plot = np.linspace(0,1,200)
+y_plot = np.linspace(0,1,200)
+x_mesh, y_mesh = np.meshgrid(x_plot, y_plot)
+z_plot=Vvect(x_mesh, y_mesh, delta)
+plt.contour(x_plot,y_plot,z_plot)
+plt.scatter(path_x1[1],path_y1[1], color='blue')
+plt.scatter(path_x2[1],path_y2[1], color='red')
+# plt.show()

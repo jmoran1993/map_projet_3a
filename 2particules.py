@@ -116,6 +116,8 @@ def gen2part(beta,deltat,start,stop,delta=0.15):
     path_y2 = [p2_0[1]]
     p1_t = p1_0
     p2_t = p2_0
+    acc = 0
+    energy = 0
     for t in np.arange(start,stop,deltat):
         p1_temp = p1_t-deltat*(gradV(p1_t[0],p1_t[1],delta)+gradWpart(p1_t,p2_t,delta))\
             +sigma*np.sqrt(deltat)*np.random.normal(0,1,(2))
@@ -123,6 +125,8 @@ def gen2part(beta,deltat,start,stop,delta=0.15):
         p2_temp = p2_t-deltat*(gradV(p2_t[0],p2_t[1],delta)+gradWpart(p2_t,p1_t,delta))\
             +sigma*np.sqrt(deltat)*np.random.normal(0,1,(2))
         p2_temp[0], p2_temp[1] = p2_temp[0] % 1, p2_temp[1] % 1    
+        energy_temp = Vpart(p1_temp,delta)+Vpart(p2_temp,delta)+Wpart(p1_temp,p2_temp,delta)
+        energy_t = Vpart(p1_t,delta)+Vpart(p2_t,delta)+Wpart(p1_t,p2_t,delta)
         ratio = np.exp(-beta*(Vpart(p1_temp,delta)+Vpart(p2_temp,delta)+Wpart(p1_temp,p2_temp,delta)\
             -(Vpart(p1_t,delta)+Vpart(p2_t,delta)+Wpart(p1_t,p2_t,delta) ) ) )        
         ptrans = min(1,ratio)
@@ -130,22 +134,28 @@ def gen2part(beta,deltat,start,stop,delta=0.15):
         if temp<ptrans:
             p1_t = p1_temp
             p2_t = p2_temp
+            acc += 1
+            energy += energy_temp
         path_x1.append(p1_t[0])
         path_y1.append(p1_t[1])
         path_x2.append(p2_t[0])
         path_y2.append(p2_t[1])
-    return path_x1, path_y1, path_x2, path_y2
+    energy = energy/acc
+    acc = acc*deltat / (stop-start)
+    return path_x1, path_y1, path_x2, path_y2, acc, energy
 
 
 delta = 0.20
 
-beta = 10
+beta = 15
 deltat= 0.001
 start = 0.
 stop = 10.
 
-path_x1, path_y1, path_x2, path_y2 = gen2part(beta,deltat,start,stop,delta)
+path_x1, path_y1, path_x2, path_y2, acc, energy = gen2part(beta,deltat,start,stop,delta)
 
+print "Acceptance rate : {}".format(acc)
+print "Energy : {}".format(energy)
 fig = plt.figure(1)
 #plt.scatter(np.asarray(path_x1),np.asarray(path_y1), color='blue')
 #plt.scatter(np.asarray(path_x2),np.asarray(path_y2), color='red')
