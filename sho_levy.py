@@ -39,5 +39,27 @@ def gen_levy(start, end, worldline):
 	levy_path[end:] = worldline[end:]
 	return levy_path
 
-worldline = [(2*np.random.random()-1)*x_max for j in range(M)]
+def create_worldlines(num_particles = 2):
+	worldlines = []
+	for i in range(num_particles):
+		worldline = [(2*np.random.random()-1)*x_max for j in range(M)]
+		worldlines.append(worldline)
+	return worldlines
+
+def gen_levy_many_particles(start, end, worldlines):
+	levy_paths = []
+	for i in range(len(worldlines)):
+		levy_paths.append(gen_levy(start, end, worldlines[i]))
+	return levy_paths
+
+def gen_levy_x(x_start=0.0, x_end=1.0, M=100):
+	levy_path = [x_start]
+	for k in range(1,M-1):
+		delta_tau_prime = (M-k)*delta_tau
+		x_mean = (delta_tau_prime * levy_path[k - 1] + delta_tau * x_end) / (delta_tau + delta_tau_prime)
+		sigma = math.sqrt(1.0 / (1.0 / delta_tau + 1.0 / delta_tau_prime))
+		levy_path.append(random.gauss(x_mean, sigma))
+	levy_path.append(x_end)
+	return levy_path
+
 
