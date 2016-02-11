@@ -166,4 +166,4 @@ for i in range(len(path_x1)):
     plt.scatter(path_x1[i],path_y1[i], color='green')
     plt.scatter(path_x2[i],path_y2[i], color='red')
     text.set_text("Iteration : "+str(i))
-    plt.draw()
+    plt.show()

@@ -15,7 +15,7 @@ def grad_potential(x, m=1.0, omega=1.0):
 ## global parameters
 
 tau = 1.0 ## imaginary time period
-M = 10 ## Number of time slices 
+M = 50 ## Number of time slices 
 delta_tau = tau/M ## imaginary time step
 
 n_bins = 100 ## for histogram 
@@ -96,32 +96,13 @@ print "Acceptance Rate {}".format(accepted_steps*1.0/(M*mc_steps)*100)
 
 steps = mc_steps*M 
 energy_average = energy_sum/steps 
-
+print "Psi 2 length {}".format(len(psi_2))
 print "Average energy calculated {}".format(energy_average)
 
 energy_variance = energy_squared_sum/steps - energy_average*energy_average
 
 
 print "Standard Deviation in Energy {}".format(np.sqrt(energy_variance/steps))
-
-## Plot for wavefunction
-energy_average_psi = 0.0
-x_list = []
-psi_list = []
-dx = (x_max-x_min)/n_bins
-for i in range(n_bins):
-    x = x_min + dx*(i+0.5)
-    x_list.append(x)
-    psi_list.append(psi_2[i]/steps)
-    energy_average_psi += psi_2[i]/steps * (0.5*x*grad_potential(x) + potential(x))
-
-print "Average energy from psi^2 {}".format(energy_average_psi)
-
-
-energy_average_theory = 0.5+ 1/(np.exp(tau)-1)
-print "Average energy theoretical {}".format(energy_average_theory)
-import matplotlib.pyplot as plt 
-plt.scatter(np.asarray(x_list), np.asarray(psi_list))
 
 
 
