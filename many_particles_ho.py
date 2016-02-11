@@ -14,7 +14,7 @@ def grad_potential(x, m=1.0, omega=1.0):
 
 ## global parameters
 
-tau = 1.0 ## imaginary time period
+tau = 0.5 ## imaginary time period
 M = 50 ## Number of time slices 
 delta_tau = tau/M ## imaginary time step
 
@@ -96,7 +96,6 @@ print "Acceptance Rate {}".format(accepted_steps*1.0/(M*mc_steps)*100)
 
 steps = mc_steps*M 
 energy_average = energy_sum/steps 
-print "Psi 2 length {}".format(len(psi_2))
 print "Average energy calculated {}".format(energy_average)
 
 energy_variance = energy_squared_sum/steps - energy_average*energy_average
@@ -104,6 +103,5 @@ energy_variance = energy_squared_sum/steps - energy_average*energy_average
 
 print "Standard Deviation in Energy {}".format(np.sqrt(energy_variance/steps))
 
-
-
-		  
+energy_average_theory = 0.5+ 1/(np.exp(tau)-1)
+print "Average energy theoretical {}".format(energy_average_theory)
