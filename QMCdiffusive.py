@@ -106,35 +106,64 @@ def gradW(x1,y1,x2,y2, delta=0.20):
 def gradWpart(p1,p2,delta=0.20):
     return gradW(p1[0],p1[1],p2[0],p2[1],delta)
 
-def gen2part(beta,deltat,start,stop,delta=0.15):
-    sigma = np.sqrt(2./beta)
-    p1_0=np.asarray([np.random.uniform(),np.random.uniform()])
-    p2_0=np.asarray([np.random.uniform(),np.random.uniform()])
-    path_x1 = [p1_0[0]]
-    path_y1 = [p1_0[1]]
-    path_x2 = [p2_0[0]]
-    path_y2 = [p2_0[1]]
-    p1_t = p1_0
-    p2_t = p2_0
+def quantInter(p1, p2, beta, sigma):
+    d = distance(p1[0],p1[1],p2[0],p2[1])
+    return 1/(2*beta*sigma**2)*d**2
+
+def quantInterGrad(p1,p2,beta,sigma):
+    x,y = plusProcheVoisin(p1[0],p1[1],p2[0],p2[1])
+    f1 =  -1/(4*beta*sigma**2)*(p1[0]-x)
+    f2 = -1/(4*beta*sigma**2)*(p1[1]-y)
+    return f1,f2
+
+def gen2partQ(beta,deltat,start,stop,delta=0.15, M=10):
+    sigma = np.sqrt(M*2./beta)
+    #Definition des deux particules 
+    p1 = []
+    p2 = []
+    for i in range(M):
+        p1.append([np.random.uniform(),np.random.uniform()])
+        p2.append([np.random.uniform(),np.random.uniform()])
+    # p1[M-1]=p1[0]
+    # p2[M-1]=p2[0]
+    path_x1, path_y1, path_x2, path_y2 = [],[],[],[]
+    for i in range(M):
+        path_x1.append([p1[i][0]])
+        path_y1.append([p1[i][1]])
+        path_x2.append([p2[i][0]])
+        path_y2.append([p2[i][1]])
+    p1_t=p1
+    p2_t=p2
+    #p1_t[i] = coordonnees de la ieme tranche de la 1ere particule au temps t
     for t in np.arange(start,stop,deltat):
-        p1_temp = p1_t-deltat*(gradV(p1_t[0],p1_t[1],delta)+gradWpart(p1_t,p2_t,delta))\
-            +sigma*np.sqrt(deltat)*np.random.normal(0,1,(2))
-        p1_temp[0], p1_temp[1] = p1_temp[0] % 1, p1_temp[1] % 1
-        p2_temp = p2_t-deltat*(gradV(p2_t[0],p2_t[1],delta)+gradWpart(p2_t,p1_t,delta))\
-            +sigma*np.sqrt(deltat)*np.random.normal(0,1,(2))
-        p2_temp[0], p2_temp[1] = p2_temp[0] % 1, p2_temp[1] % 1    
-        ratio = np.exp(-beta*(Vpart(p1_temp,delta)+Vpart(p2_temp,delta)+Wpart(p1_temp,p2_temp,delta)\
-            -(Vpart(p1_t,delta)+Vpart(p2_t,delta)+Wpart(p1_t,p2_t,delta) ) ) )        
+        p1_temp = np.zeros((M,2))
+        p2_temp = np.zeros((M,2))
+        for i in range(M):
+            p1_temp[i]=p1_t[i]-deltat*(gradV(p1_t[i][0],p1_t[i][1],delta)+gradWpart(p1_t[i],p2_t[i],delta))\
+            +sigma*np.sqrt(deltat)*np.random.normal(0,1,(2))\
+            -deltat*np.asarray(quantInterGrad(p1_t[i],p1_t[(i+1)%M],beta,sigma))
+            p2_temp[i]=p2_t[i]-deltat*(gradV(p1_t[i][0],p1_t[i][1],delta)+gradWpart(p2_t[i],p1_t[i],delta))\
+            +sigma.np.sqrt(deltat)*np.random.normal(0,1,(2))\
+            -deltat*np.asarray(quantInterGrad(p2_t[i],p2_t[(i+1)%M],beta,sigma))
+        energy_t = 0
+        energy_temp = 0
+        for i in range(M):
+            energy_t = energy_t + Vpart(p1_t[i],delta)+Vpart(p2_t[i],delta)+Wpart(p1_t[i],p2_t[i],delta)\
+            +quantInter(p1_t[i],p1_t[(i+1)%M],beta,sigma)+quantInter(p2_t[i],p2_t[(i+1)%M],beta,sigma)
+            energy_temp = energy_temp + Vpart(p1_temp[i],delta)+Vpart(p2_temp[i],delta)+Wpart(p1_temp[i],p2_temp[i],delta)\
+            +quantInter(p1_temp[i],p1_temp[(i+1)%M],beta,sigma)+quantInter(p2_temp[i],p2_temp[(i+1)%M],beta,sigma)
+        ratio = np.exp(-beta*(energy_temp-energy_t))
         ptrans = min(1,ratio)
-        temp=np.random.uniform()
-        if temp<ptrans:
+        temp = np.random.uniform()
+        if temp < ptrans:
             p1_t = p1_temp
             p2_t = p2_temp
-        path_x1.append(p1_t[0])
-        path_y1.append(p1_t[1])
-        path_x2.append(p2_t[0])
-        path_y2.append(p2_t[1])
-    return path_x1, path_y1, path_x2, path_y2
+        for i in range(M):
+            path_x1[i].append(p1_t[i][0])
+            path_y1[i].append(p1_t[i][1])
+            path_x2[i].append(p2_t[i][0])
+            path_y2[i].append(p2_t[i][1])
+        return path_x1, path_y1, path_x2, path_y2
 
 
 delta = 0.20
@@ -144,26 +173,4 @@ deltat= 0.001
 start = 0.
 stop = 10.
 
-path_x1, path_y1, path_x2, path_y2 = gen2part(beta,deltat,start,stop,delta)
-
-fig = plt.figure(1)
-#plt.scatter(np.asarray(path_x1),np.asarray(path_y1), color='blue')
-#plt.scatter(np.asarray(path_x2),np.asarray(path_y2), color='red')
-plt.axis([0,1,0,1])
-x_plot = np.linspace(0,1,200)
-y_plot = np.linspace(0,1,200)
-x_mesh, y_mesh = np.meshgrid(x_plot, y_plot)
-z_plot=Vvect(x_mesh, y_mesh, delta)
-plt.contour(x_plot,y_plot,z_plot)
-plt.ion()
-text = plt.text(0.1,0.9, "Iteration : ")
-
-plt.show()
-
-plt.figure(1)
-for i in range(len(path_x1)):
-  if i % 50 == 0:
-    plt.scatter(path_x1[i],path_y1[i], color='green')
-    plt.scatter(path_x2[i],path_y2[i], color='red')
-    text.set_text("Iteration : "+str(i))
-    plt.draw()
+path_x1, path_y1, path_x2, path_y2 = gen2partQ(beta,deltat,start,stop,delta)
