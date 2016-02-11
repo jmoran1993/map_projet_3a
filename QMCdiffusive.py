@@ -126,12 +126,6 @@ def gen2partQ(beta,deltat,start,stop,delta=0.15, M=10):
         p2_0.append([np.random.uniform(),np.random.uniform()])
     # p1[M-1]=p1[0]
     # p2[M-1]=p2[0]
-    path_x1, path_y1, path_x2, path_y2 = [],[],[],[]
-    for i in range(M):
-        path_x1.append([p1_0[i][0]])
-        path_y1.append([p1_0[i][1]])
-        path_x2.append([p2_0[i][0]])
-        path_y2.append([p2_0[i][1]])
     print len(path_x1)
     p1_t=p1_0
     p2_t=p2_0
