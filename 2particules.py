@@ -142,12 +142,12 @@ def gen2part(beta,deltat,start,stop,delta=0.15):
         path_y2.append(p2_t[1])
     energy = energy/acc
     acc = acc*deltat / (stop-start)
-    return path_x1, path_y1, path_x2, path_y2, acc, energy
+    return acc, energy
 
 
 delta = 0.20
 
-betat = np.linspace(5.0, 50, 10)
+betat = np.linspace(0.1, 10, 20)
 deltat= 0.001
 start = 0.
 stop = 10.
@@ -155,7 +155,7 @@ energyt = []
 
 for beta in betat:
 
-    path_x1, path_y1, path_x2, path_y2, acc, energy = gen2part(beta,deltat,start,stop,delta)
+    acc, energy = gen2part(beta,deltat,start,stop,delta)
     energyt.append(energy)
     print "Temperature : {}".format(beta)
     print "Acceptance rate : {}".format(acc)
