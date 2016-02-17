@@ -3,7 +3,7 @@
 \usepackage[utf8]{inputenc}     
 \usepackage{amsmath}
 \usepackage{amsfonts}
-\usepackage[francais]{babel}
+\usepackage[french]{babel}
 \usepackage[version=3]{mhchem}
 \usepackage{epstopdf}
 \usepackage[justification=centering]{caption}
@@ -15,6 +15,20 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage{subcaption}
 \usepackage[version=3]{mhchem}
+\usepackage{subcaption}
+\usepackage{amsthm}
+\usepackage{empheq}
+
+\usepackage{geometry}
+
+\newcommand*\widefbox[1]{\fbox{\hspace{2em}#1\hspace{2em}}}
+\theoremstyle{definition}
+
+\newtheorem{definition}{Definition}[section]
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
 
 \title{Enseignement d'Approfondissement}
 \date{Décembre-Février 2016}
@@ -25,8 +39,15 @@
 \newcommand{\dom}{L\mathbb{T}^d}
 \begin{document}
 \maketitle
+\newpage
+\tableofcontents
+\newpage
+\section*{Introduction}
+Dans cet EA nous nous sommes intéressés à différentes méthodes 
 
-\section{cours 1}
+
+\newpage
+\section{Fonction de partition d'un système quantique}
 On se propose d'étudier un système équivalent à deux particules identiques (même masse donc) dans une boîte à $d$ dimensions, par exemple deux particules dans la boîte $[0;1]^d$ avec des conditions périodiques et l'hamiltonien :
 \begin{equation}
 \hham = -\frac{\hbar^2}{2m}\sum_{i=1}^{d}\left( \frac{\partial^2}{\partial x_{1,i}}+\frac{\partial^2}{\partial x_{2,i}}\right)+v(x_1)+v(x_2)+w(x_1,x_2)
@@ -159,4 +180,304 @@ Z(\beta)=\mathrm{Tr}(e^{-\beta H})& \simeq \mathrm{Tr}(h_M^M)
 \end{align*}
 
 Où l'intégrale ci-dessus s'interprète comme l'intégrale de la pseudo-action $S_M$ le long d'un chemin qui part de $X$ et revient vers $X$ en temps $\beta$ fini.
+
+\section{Mouvement Brownien, Calcul d'Itô et formule de Feynman-Kac}
+Dans cette partie nous décrirons une méthode probabiliste pour évaluer le noyau $k_{\beta}$ que nous avons décrit dans la section précédente. 
+Avant de commencer le calcul de $k_{\beta}$, nous allons introduire quelques notions utiles.
+
+\subsection{Definitions}
+
+\theoremstyle{definition}
+
+\begin{definition}{\textbf{Processus de Markov}}
+
+Soit $(X_n)_{n >0}$ un processus aléatoire discret sur un espace d'états dénombrable $E$. Le processuss satisfait la propriété de Markov si pour toute collection d'états $(x_0, x_1, ... x_n) \in E$, nous avons 
+
+\begin{equation} 
+\mathbb{P}(X_{n+1} = y | X_0 = x_0, X_1 = x_1,....X_n = x_n) = \mathbb{P}(X_{n+1} = y | X_n = x_n)
+\end{equation}
+
+Il faut que les deux probabilités conditionnelles soient bien définies. Le processus $(X_n)_{n>0} $ est alors appelé un processus de Markov.
+
+\end{definition}
+
+\begin{definition}{\textbf{Ergodicité}}
+
+Un processus est ergodique s'il satisfait les conditions suivantes :
+
+\begin{itemize}
+
+\item 
+
+$\varphi$ est une mesure de probabilité invariante par le processus de Markov. 
+
+\item 
+
+\textbf{Condition d'accessibilité}: 
+
+\begin{align}
+\forall \mathrm{B} \in \mathcal{B}(\mathbb{R}^d)\quad \mathrm{t.q.}\quad \varphi(\mathrm{B})>0, \quad \forall x\in\mathbb{R}^d, \quad \exists n\in\mathbb{N} \quad \mathrm{t.q.}\quad \mathbb{P}(\mathrm{X}_n \in \mathcal{B} | \mathrm{X}_0 =n ) > 0 
+\end{align}
+\end{itemize}
+
+\end{definition}
+
+\begin{remark}
+\begin{enumerate}
+\item 
+Nous avons défini la notion d'ergodicité sur $\mathbb{R}^d$, mais les mêmes définitions restent valables pour $\mathrm{L}\mathbb{T}^d$.
+\item 
+Au moment de simuler avec l'algorithme de Metropolis, il suffira de vérifier que la probabilité de transfert pour cet algorithme satisfait la condition d'accessibilité dans la définition d'ergodicité.
+
+\end{enumerate}
+\end{remark}
+
+
+\begin{definition}{\textbf{Chaînes de Markov}}
+
+Une chaîne de Markov (discrète) est un processus de Markov défini par :
+
+\begin{equation}
+\left\{ 
+  \begin{array}{ll}
+  \mathrm{X}_{n+1}^{\Delta t} &= \mathrm{X}_{n}^{\Delta t} + b(\mathrm{X}_{n}^{\Delta t}) + \sqrt{\Delta t} \xi_{n}
+  \\
+  \mathrm{X}_{0}^{\Delta t} &\sim  f(x) \mathrm{d}x 
+  \end{array}
+\right.
+\end{equation}
+
+
+
+avec $x \in \mathbb{R}^d$ et $b: \mathbb{R}^d \to \mathbb{R}^d$ une fonction régulière. Ici $\xi_{j} \sim \mathcal{N}(0,1)_{\mathbb{R}^d}$, i.e. $\xi_{j}$ est un vecteur gaussien de dimension $d$. 
+\end{definition}
+
+À partir de la chaine de Markov defini ci-dessus nous pouvons construire un processus de Markov en temps continu en reliant les instants de temps $t_n$ et $t_{n+1}$ de manière affine. Dans ce cas, nous avons avec les mêmes conditions que ci-dessus :
+
+\begin{align}
+\forall t \in [t_n,t_{n+1}],\quad\tilde{\mathrm{X}}_{t}^{\Delta t} &= \mathrm{X}_{n}^{\Delta t} + (t-t_n) \mathrm{X}_{n+1}^{\Delta t} 
+\end{align}
+
+Nous avons de même 
+\begin{equation}
+\tilde{\mathrm{X}}_{t}^{\Delta t} \underset{\Delta t \to 0}{\longrightarrow} \mathrm{X}_t
+\end{equation}
+
+
+où $\mathrm{X}_{t}$ suit l’équation différentielle stochastique donnée par: 
+
+\begin{align}
+\label{equ_stoch_x}
+\mathrm{dX}_{t} &= b(\mathrm{X}_{t})\mathrm{d}t + \mathrm{dW}_{t} \\
+\mathrm{X}_{0} &\sim f(x)\mathrm{d}x
+\end{align}
+
+où $\mathrm{W}_{t}$ est le processus de Wiener.
+
+\subsection{Formule d'Itô}
+
+A la fin de la section précédente, nous avons abouti à une équation différentielle stochastique qui détermine le processus de Markov en temps continu. Pour faciliter la résolution de cette équation, nous  mettrons en place des formules de calcul différentiel stochastique qui nous permettront d'aboutir à la formule de Feynman-Kac. 
+
+Considérons d'abord l’équation \eqref{equ_stoch_x} sans le terme stochastique $\mathrm{dW}_{t}$. Dans ce cas, l'équation devient déterministe et sa solution $\mathrm{Y}_t$ suit l'équation:
+
+\begin{equation}
+\frac{\mathrm{dY}_{t}}{\mathrm{d}t} = b(\mathrm{Y}_t) 
+\end{equation}
+
+Pour rester dans un cadre simple, nous travaillerons dans $\mathbb{R}$, mais les résultats sont bien évidemment généralisables sur $\mathbb{R}^d$. Soit $h: t \times \mathbb{R}^d \rightarrow \mathbb{R}$. Alors nous avons : 
+
+\begin{align*}
+\mathrm{d}(h(\mathrm{Y}_{t})) &= \frac{\partial h}{\partial t}(t,\mathrm{Y}(t)) \mathrm{d}t + \nabla h(\mathrm{Y}_{t}) \mathrm{dY}_{t} \\
+&= \frac{\partial h}{\partial t}(t,\mathrm{Y}(t)) \mathrm{d}t + \nabla h(\mathrm{Y}_{t}) b(\mathrm{Y}_{t})\mathrm{d}t
+\end{align*}
+
+Dans le cas de $\mathrm{X}_{t}$, solution de l'équation différentielle stochastique \eqref{equ_stoch_x}, la différentielle de $h(t, \mathrm{X}_t)$ contient un terme supplémentaire faisant intervenir les dérivées secondes de h. Nous obtenons finalement:
+
+\begin{equation}
+\mathrm{d}(h(t,\mathrm{X}_t)) = ( \frac{\partial h}{\partial t}(t, \mathrm{X}_t) + \nabla h(t,\mathrm{X}_t) b(\mathrm{X}_t) + \frac{1}{2} \Delta h(t,\mathrm{X}_t) )\mathrm{d}t + \nabla h(t,\mathrm{X}_t) \mathrm{dW}_{t}
+\end{equation}
+
+\subsection{Le Formule de Feynman-Kac}
+
+Munis des règles du calcul différentiel, nous sommes maintenant en mesure de dériver la formule de Feynman-Kac.
+
+Pour ce faire, nous introduisons deux équations : les équations de Kolmogorov forward et backward 
+
+\begin{definition}{\textbf{L'equation de Kolmogorov forward}}
+C'est une équation différentielle associé à \eqref{equ_stoch_x} définie  dans $]0,\beta] \times \Omega$par : 
+
+%Il faut expliciter le domaine, j'imagine ? Ou la classe de u ? 
+\begin{equation}
+\label{kolmo_forw}
+\begin{split}
+\frac{\partial u}{\partial t} &= \frac{1}{2} \Delta u - \mathrm{div}(bu) - \mathrm{V}u \\
+u(0) &= f(x)
+\end{split}
+\end{equation}
+
+\end{definition}
+
+
+
+\begin{definition}{\textbf{L'équation de Kolmogorov backward}}
+
+Dans $]0,\beta] \times \Omega$, nous definissons l'equation de Kolmogorov backward associé à \eqref{equ_stoch_x}
+
+\begin{equation}
+\label{kolmo_back}
+\begin{split}
+\frac{\partial v}{\partial t} + \frac{1}{2} \Delta v + b \nabla v - \mathrm{V}v &= 0 \\
+v(\beta, x) &= g(x)
+\end{split}
+\end{equation}
+\end{definition}
+
+Nous considérons la dérivée totale $\mathrm{d}(v(t, \mathrm{X}_{t}) e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s})$ où $\mathrm{X}_{t}$ est défini en \eqref{define_xt}. En utilisant l'équation \eqref{develop_ito_x}, nous trouvons que :
+
+\begin{multline}
+\begin{split}
+\mathrm{d}(v(t, \mathrm{X}_{t}) e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s}) = (\frac{\partial v}{\partial t} + b \nabla v + \frac{1}{2}\Delta v - \mathrm{V}v)e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s} \\
++ \nabla v(t, \mathrm{X}_t)\mathrm{dW}_{t} e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s}
+\end{split}
+\end{multline}
+
+et le premier terme est nul d'après \eqref{kolmo_back}. Donc :
+
+\begin{align}
+\mathrm{d}(v(t, \mathrm{X}_{t}) e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s}) = \nabla v(t, \mathrm{X}_t)\mathrm{dW}_{t} e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s}
+\end{align}
+
+Enfin nous remarquons que l’espérance de $\nabla v(t, \mathrm{X}_t)\mathrm{dW}_{t} e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}) \mathrm{d}s}$ est nulle, et en utilisant la commutation des différentes opérations avec l’espérance, nous avons ainsi que: 
+
+\begin{align}
+\mathbb{E}(v(t , \mathrm{X}_{t})e^{-\int_0^{t} \mathrm{V}(\mathrm{X}_{s}}) = \mathrm{cte}
+\end{align}
+
+En particulier:
+
+\begin{align}
+\mathbb{E}(v(\beta , \mathrm{X}_{\beta})e^{-\int_0^{\beta} \mathrm{V}(\mathrm{X}_{s})}) &= \mathbb{E}(v(0, \mathrm{X}_0)), \\
+\mathbb{E}(g(x_{\beta}))e^{-\int_0^{\beta} \mathrm{V}(\mathrm{X}_{s})}) &= \int_{\Omega} v(0,x) f(x) \mathrm{d}x.
+\end{align}
+
+où nous avons utilisé la condition initiale de \eqref{kolmo_back} et où l’intégration porte sur l'ouvert $\Omega$ considéré. 
+
+Considérons maintenant l'intégrale $\int_{\Omega} v(0,x) f(x) \mathrm{d}x$. Par la condition initiale de \eqref{kolmo_forw}, nous avons par conséquent :
+
+\begin{equation}
+\int_{\Omega} v(0,x) f(x) \mathrm{d}x = \int_{\Omega} v(0,x) u(0,x) \mathrm{d}x
+\end{equation}
+
+D'où:
+
+\begin{align}
+\label{expansion_integral_vu}
+\begin{split}
+\int_{\Omega} v(0,x) u(0,x) \mathrm{d}x &= \int_{\Omega} v(\beta, x) u(\beta,x) \mathrm{d}x - \int_{0}^{\beta} \frac{\mathrm{d}}{\mathrm{d}t}\left(\int_{\Omega} v(t,x) u(t,x) \mathrm{d}x \right) \mathrm{d}t \\
+&= \int_{\Omega} v(\beta, x) u(\beta,x) \mathrm{d}x - \int_{0}^{\beta} \left( \int_{\Omega} \frac{\partial v}{\partial t} u \mathrm{d}x + \frac{\partial u}{\partial v} \mathrm{d}x \right) \mathrm{d}t
+\end{split}
+\end{align}
+
+Nous remarquons alors que les problèmes \eqref{kolmo_forw} et \eqref{kolmo_back} sont l'adjoint l'un de l'autre pour le produit scalaire usuelle defini pour l'espace $\mathrm{L}^2$. En d'autres termes, si $L$ est un opérateur différentiel et $L^{*}$ son opérateur adjoint, nous avons : 
+
+\begin{align}
+\label{adjoint_conditions}
+\begin{split}
+\frac{\partial u}{\partial t} &= \mathrm{L}u  \\
+\frac{\partial v}{\partial t} &= -\mathrm{L}^{*}v
+\end{split}
+\end{align}
+
+En d'autres termes :
+\begin{align}
+- \int_{0}^{\beta} \left( \int_{\Omega} \frac{\partial v}{\partial t} u \mathrm{d}x + \frac{\partial u}{\partial v} \mathrm{d}x \right) \mathrm{d}t &= 
+- \int_{0}^{\beta} \left( (-L^{*}v,u)_{\mathrm{L}^2} + (v, Lu)_{L^2} \right) \mathrm{d}t &= 0
+\end{align}
+
+Ainsi :
+
+\begin{align*}
+\int_{\Omega} v(\beta, x) u(\beta, x) \mathrm{d}x &= \int_{\Omega} v(0,x) f(x) \mathrm{d}x \\
+\int_{\Omega} g(x) u(\beta, x) \mathrm{d}x &= \int_{\Omega} v(0,x) f(x) \mathrm{d}x
+\end{align*}
+
+et on déduit la formule de Feynman-Kac : 
+
+\begin{empheq}[box=\widefbox]{align}
+\label{feynman_kac}
+\int_{\Omega} g(x) u(\beta,x) \mathrm{d}x &= \mathbb{E}\left( g(x_{\beta}) e^{-\int_{0}^{\beta} \mathrm{V}(x_s)\mathrm{d}s} \right)
+\end{empheq}
+
+où $\mathrm{X}_{t}$ est la solution de \eqref{equ_stoch_x}
+
+\subsection{Application à notre problème} 
+
+Revenons sur notre problème de départ, qui est de trouver le noyau de l'opérateur $e^{-\beta H}$. Nous rappelons que le noyau est une fonction $k_{\beta}$ telle que:
+
+\begin{equation}
+\label{def_noyau} 
+\left(e^{-\beta H} f \right)(x) = \int_{\Omega} k_{\beta}(x,y) f(y) \mathrm{d}y
+\end{equation}
+
+Nous remarquons que, pour $b=0$, $e^{-\beta H} f$ est la solution de \eqref{kolmo_forw}. D'où en appliquant \eqref{feynman_kac} :
+
+\begin{equation}
+\int_{\Omega X \Omega} k_{\beta}(x,y) f(y)g(x) \mathrm{d}x\mathrm{d}y = \mathbb{E}\left( g(\mathrm{X}_{\beta}) e^{-\int_{0}^{\beta} \mathrm{V}(\mathrm{X}_s)\mathrm{d}s} \right)
+\end{equation}
+
+où $\mathrm{X}_t$ est la solution de \eqref{equ_stoch_x}. 
+
+Cette dernière condition étant vraie pour tout $f$, nous prenons $f(y) = \delta(y)$, le delta de Dirac. Dans ce cas, nous avons pour le processus $\mathrm{X}_{t}$ : 
+\begin{equation}
+\mathrm{X}_{\beta} = y + \mathrm{W}_{\beta}
+\end{equation}. 
+
+D'où:
+
+\begin{align}
+\begin{split}
+\int_{\Omega} k_{\beta}(x,y) g(x) \mathrm{d}x &= \mathbb{E}\left( g(y+\mathrm{W}_{\beta}) e^{-\int_{0}^{\beta} V(y+\mathrm{W}_s) \mathrm{d}s} \right) \\
+&= \int_{\Omega} g(x) \mathbb{E}_{y+\mathrm{W}_{\beta}=x} \left( e^{-\int_{0}^{\beta} V(y+\mathrm{W}_{s}) \mathrm{d}s} \right) \mathrm{d}x
+\end{split}
+\end{align}
+
+Nous identifions alors le noyau comme étant : 
+
+\begin{empheq}[box=\widefbox]{align}
+\label{noyau_esperance}
+k_{\beta}(x,y) = \mathbb{E}_{y+\mathrm{W}_{\beta}=x} \left( e^{-\int_{0}^{\beta} V(y+\mathrm{W}_{s}) \mathrm{d}s} \right)
+\end{empheq}
+
+Dans notre cas, nous nous intéressons au calcul de la fonction de partition $Z = \mathrm{Tr}(e^{-\beta H})$, qui d'après ce qui précède s'écrit : 
+
+\begin{align}
+\label{partition_func_martingale}
+\begin{split}
+Z &= \mathrm{Tr}(e^{-\beta H}) = \int_{\Omega} k_{\beta}(x,x) \mathrm{d}x \\
+&= \int_{\Omega} \mathbb{E}_{\mathrm{W}_{\beta} =0} \left( e^{-\int_{0}^{\beta} V(x+\mathrm{W}_{s})} \right)
+\end{split}
+\end{align}
+
+\begin{remark}
+Nous devons interpréter les deux termes dans cette dernière relation. Prenons d'abord $\mathbb{E}_{\mathrm{W}_{\beta=0}}$. C'est le terme d’espérance sur les ponts browniens, c'est-à-dire une espérance sur tous les chemins allant de $x_0$ au temps $t=0$ jusqu'au un temps $\beta$ où l'on revient au point de départ $x_{\beta}=x_0$. 
+
+Le deuxième terme en exponentiel représente la création ou annihilation des particules à un point $x+\mathrm{W}_{s}$ donné. Nous formons donc une image de ce processus comme suivant : 
+
+\begin{enumerate} 
+
+\item 
+
+Le particule commence son trajet à $x_{t=0}=x_0 = 0$. Nous allons regarder seulement les trajets qui finissent à un temps $t=\beta$, de sorte que $x_\beta = 0$.
+
+\item 
+
+Pendant ce trajet, la particule peut être détruite ou créée selon le poids probabiliste $e^{-\int_{0}^{\beta} V(x+\mathrm{W}_{s})}$. 
+
+\item 
+
+L’espérance sur tous ces trajets nous donne la fonction de partition $Z = \mathrm{Tr}(e^{-\beta H})$. 
+\end{enumerate}
+
+
+\end{remark}
 \end{document}
