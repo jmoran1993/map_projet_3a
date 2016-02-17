@@ -1,5 +1,5 @@
 \documentclass[11pt]{article}
-%\usepackage[coverpage]{polytechnique}
+\usepackage[coverpage]{polytechnique}
 \usepackage[utf8]{inputenc}     
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -119,11 +119,12 @@ Ainsi
 \\
 &= e^{-\frac{\beta}{2M}V(X)}\int_{(\dom)^2}k_T(X,X_2)k_T(X_2,X_1)e^{-\frac{\beta}{M}\left(V(X_2)+\frac{V(X_1)}{2}\right)}\left(h_M^{M-2}\psi\right)(X_1)\mathrm{d}X_1\mathrm{d}X_2
 \\
-&=e^{-\frac{\beta}{2M}V(X)}\int_{(\dom)^3}k_T(X,X_3)k_T(X_3,X_2)k_T(X_2,X_1)e^{-\frac{\beta}{M}\left(V(X_3)+V(X_2)+\frac{V(X_1)}{2}\right)}\left(h_M^{M-3}\psi\right)(X_1)\mathrm{d}X_1\mathrm{d}X_2 \\ \mathrm{d}X_3
+&=e^{-\frac{\beta}{2M}V(X)}\int_{(\dom)^3}k_T(X,X_3)k_T(X_3,X_2)k_T(X_2,X_1)e^{-\frac{\beta}{M}\left(V(X_3)+V(X_2)+\frac{V(X_1)}{2}\right)}\left(h_M^{M-3}\psi\right)(X_1)\mathrm{d}X_1 \\ 
+&\mathrm{d}X_2 \mathrm{d}X_3
 \\
 &\vdots
 \\
-&=e^{-\frac{\beta}{2M}V(X)} \int_{(\dom)^{M-1}} \left(\prod_{i=1}^{M-1}\mathrm{d}X_i\right)\mathrm{d}X_i k_T(X,X_{M-1})\ldots k_T(X_2,X_1) e^{-\frac{\beta}{M}\left(\frac{V(X_1)}{2}+\sum_{i=2}^{M-1}V(X_i)\right)}\\ \left(h_M\psi\right)(X_1)
+&=e^{-\frac{\beta}{2M}V(X)} \int_{(\dom)^{M-1}} \left(\prod_{i=1}^{M-1}\mathrm{d}X_i\right)k_T(X,X_{M-1})\ldots k_T(X_2,X_1) e^{-\frac{\beta}{M}\left(\frac{V(X_1)}{2}+\sum_{i=2}^{M-1}V(X_i)\right)}\\ &\left(h_M\psi\right)(X_1)
 \\
 &= e^{-\frac{\beta}{2M}V(X)}\int_{(\dom)^{M}}\left(\prod_{i=1}^{M}\mathrm{d}X_i\right) k_T(X,X_{M})\ldots k_T(X_2,X_1) e^{-\frac{\beta}{M}\left(\frac{V(X_1)}{2}+\sum_{i=2}^{M}V(X_i)\right)}\psi(X_1)
 \\
