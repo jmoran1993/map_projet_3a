@@ -136,7 +136,7 @@ def gen_part(beta,deltat,start,stop, delta=0.15):
 		#print x_t[0],x_t[1]
 	energy = energy/acc
 	acc = deltat*acc/(stop-start)
-	return path_x,path_y, acc, energy
+	return acc, energy
 
 def gen_2part(beta,deltat,start,stop,delta=0.15):
 	sigma=np.sqrt(2./beta)
@@ -174,7 +174,7 @@ def gen_2part(beta,deltat,start,stop,delta=0.15):
  		path_y2.append(x2_t[1])
 	energy = energy/acc
 	acc = acc*deltat/(stop-start)
-	return path_x1, path_y1, path_x2, path_y2, acc, energy
+	return energy
 
 # ax.plot_surface(x,y,z)
 
@@ -187,45 +187,51 @@ def gen_2part(beta,deltat,start,stop,delta=0.15):
 # plt.show()
 
 
-delta = 0.20
+# delta = 0.20
 
-beta = 10
-deltat= 0.001
-start = 0.
-stop = 10.
+# betat = np.linspace(0.1, 3, 50)
+# tempt = np.linspace(0.1,10,50)
+# deltat= 0.001
+# start = 0.
+# stop = 10.
 
-path_x,path_y, acc, energy = gen_part(beta,deltat,start,stop,delta)
+# energyt = []
 
-print "Energy : {}".format(energy)
-print "Acceptance rate : {}".format(acc)
+# for temp in tempt:
 
-colors = np.zeros(len(path_x))
-colors[0]=10
+#     acc, energy = gen_part(1/temp,deltat,start,stop,delta)
+#     energyt.append(energy)
+#     print "Temperature : {}".format(temp)
+#     print "Acceptance rate : {}".format(acc)
+#     print "Energy : {}".format(energy)
+
+# plt.plot(tempt, energyt)
+# plt.show()
 
 # V_path = [V(x,y,delta) for x in path_x for y in path_y ]
 
 # fig = plt.figure(2)
 # plt.plot(V_path)
 
-fig = plt.figure(2)
-plt.hist(path_x)
+# fig = plt.figure(2)
+# plt.hist(path_x)
 
-fig = plt.figure(3)
-plt.scatter(np.asarray(path_x),np.asarray(path_y))
-plt.axis([0,1,0,1])
-# plt.ion()
+# fig = plt.figure(3)
+# plt.scatter(np.asarray(path_x),np.asarray(path_y))
+# plt.axis([0,1,0,1])
+# # plt.ion()
 
-x_plot = np.linspace(0,1,200)
-y_plot = np.linspace(0,1,200)
-x_mesh, y_mesh = np.meshgrid(x_plot, y_plot)
-z_plot=Vvect(x_mesh, y_mesh, delta)
-plt.contour(x_plot,y_plot,z_plot)
+# x_plot = np.linspace(0,1,200)
+# y_plot = np.linspace(0,1,200)
+# x_mesh, y_mesh = np.meshgrid(x_plot, y_plot)
+# z_plot=Vvect(x_mesh, y_mesh, delta)
+# plt.contour(x_plot,y_plot,z_plot)
 
-fig = plt.figure(4)
-plt.plot(path_x)
+# fig = plt.figure(4)
+# plt.plot(path_x)
 
-fig = plt.figure(5)
-plt.plot(path_y)
+# fig = plt.figure(5)
+# plt.plot(path_y)
 
 # fig = plt.figure(6)
 # ax = fig.add_subplot(111,projection='3d')
@@ -242,7 +248,7 @@ plt.plot(path_y)
 
 # ax.bar3d(xpos, ypos, zpos, dx, dy, dz, color='b', zsort='average')
 
-plt.show()
+# plt.show()
 
 # plt.figure(3)
 # for i in range(len(path_x)):

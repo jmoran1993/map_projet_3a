@@ -147,21 +147,25 @@ def gen2part(beta,deltat,start,stop,delta=0.15):
 
 delta = 0.20
 
-betat = np.linspace(0.1, 10, 20)
+betat = np.linspace(0.1, 3, 50)
+tempt = np.linspace(0.1,10,30)
 deltat= 0.001
 start = 0.
 stop = 10.
-<<<<<<< HEAD
+
 energyt = []
 
-for beta in betat:
+for temp in tempt:
 
-    acc, energy = gen2part(beta,deltat,start,stop,delta)
+    acc, energy = gen2part(1/temp,deltat,start,stop,delta)
     energyt.append(energy)
-    print "Temperature : {}".format(beta)
+    print "Temperature : {}".format(temp)
     print "Acceptance rate : {}".format(acc)
     print "Energy : {}".format(energy)
 
+#temp = [1/beta for beta in betat]
+plt.plot(tempt, energyt)
+plt.show()
 
 # fig = plt.figure(1)
 # #plt.scatter(np.asarray(path_x1),np.asarray(path_y1), color='blue')
@@ -184,31 +188,3 @@ for beta in betat:
 #     plt.scatter(path_x2[i],path_y2[i], color='red')
 #     text.set_text("Iteration : "+str(i))
 #     plt.draw()
-=======
-
-path_x1, path_y1, path_x2, path_y2, acc, energy = gen2part(beta,deltat,start,stop,delta)
-
-print "Acceptance rate : {}".format(acc)
-print "Energy : {}".format(energy)
-fig = plt.figure(1)
-#plt.scatter(np.asarray(path_x1),np.asarray(path_y1), color='blue')
-#plt.scatter(np.asarray(path_x2),np.asarray(path_y2), color='red')
-plt.axis([0,1,0,1])
-x_plot = np.linspace(0,1,200)
-y_plot = np.linspace(0,1,200)
-x_mesh, y_mesh = np.meshgrid(x_plot, y_plot)
-z_plot=Vvect(x_mesh, y_mesh, delta)
-plt.contour(x_plot,y_plot,z_plot)
-plt.ion()
-text = plt.text(0.1,0.9, "Iteration : ")
-
-plt.show()
-
-plt.figure(1)
-for i in range(len(path_x1)):
-  if i % 50 == 0:
-    plt.scatter(path_x1[i],path_y1[i], color='green')
-    plt.scatter(path_x2[i],path_y2[i], color='red')
-    text.set_text("Iteration : "+str(i))
-    plt.show()
->>>>>>> 379a8584249ebef828d59b289b304a504ea4cfb5
