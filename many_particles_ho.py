@@ -14,14 +14,14 @@ def grad_potential(x, m=1.0, omega=1.0):
 
 ## global parameters
 
-tau = 1.0 ## imaginary time period
-M = 10 ## Number of time slices 
+tau = 0.5 ## imaginary time period
+M = 50 ## Number of time slices 
 delta_tau = tau/M ## imaginary time step
 
 n_bins = 100 ## for histogram 
 delta = 1.0 ## metropolis step size
 
-mc_steps = 100000 ## Number of monte-carlo steps 
+mc_steps = 10000 ## Number of monte-carlo steps 
 x_max = 4.0 ## We restrict the positions between +4 and -4
 x_min = -4.0
 
@@ -72,8 +72,6 @@ for step in range(thermal_steps):
 
 print "Acceptance Rate {}".format(accepted_steps*1.0/(M*thermal_steps)*100)
 
-psi_2 = np.zeros((n_bins)) ##Probability distribution of the particle 
-
 print "Performing monte-carlo steps"
 energy_sum = 0.0
 energy_squared_sum = 0.0 
@@ -85,9 +83,9 @@ for step in range(mc_steps):
 	for j in range(M):
 		if metropolis_step(pos_x_new, pos_x):
 			accepted_steps +=1
-		bin_pos = int((pos_x_new[0]-x_min)/(x_max-x_min) * n_bins)
-		if (bin_pos >=0) & (bin_pos < M):
-			psi_2[bin_pos]  +=1
+		# bin_pos = int((pos_x_new[0]-x_min)/(x_max-x_min) * n_bins)
+		# if (bin_pos >=0) & (bin_pos < M):
+		# 	psi_2[bin_pos]  +=1
 		energy = potential(pos_x_new[0]) + 0.5*pos_x_new[0]*grad_potential(pos_x_new[0])
 		energy_sum += energy 
 		energy_squared_sum += energy*energy
@@ -95,34 +93,13 @@ for step in range(mc_steps):
 print "Acceptance Rate {}".format(accepted_steps*1.0/(M*mc_steps)*100)
 
 steps = mc_steps*M 
-energy_average = energy_sum/steps 
-
+energy_average = energy_sum/accepted_steps
 print "Average energy calculated {}".format(energy_average)
 
 energy_variance = energy_squared_sum/steps - energy_average*energy_average
 
 
-print "Standard Deviation in Energy {}".format(np.sqrt(energy_variance/steps))
-
-## Plot for wavefunction
-energy_average_psi = 0.0
-x_list = []
-psi_list = []
-dx = (x_max-x_min)/n_bins
-for i in range(n_bins):
-    x = x_min + dx*(i+0.5)
-    x_list.append(x)
-    psi_list.append(psi_2[i]/steps)
-    energy_average_psi += psi_2[i]/steps * (0.5*x*grad_potential(x) + potential(x))
-
-print "Average energy from psi^2 {}".format(energy_average_psi)
-
+print "Standard Deviation in Energy {}".format(np.sqrt(energy_variance/accepted_steps))
 
 energy_average_theory = 0.5+ 1/(np.exp(tau)-1)
 print "Average energy theoretical {}".format(energy_average_theory)
-import matplotlib.pyplot as plt 
-plt.scatter(np.asarray(x_list), np.asarray(psi_list))
-
-
-
-		  
