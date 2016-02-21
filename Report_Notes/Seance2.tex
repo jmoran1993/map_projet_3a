@@ -365,11 +365,11 @@ où $\rho_{\mathrm{D}}$ est la matrice de densité pour un système de $N$ parti
 
 \subsection{L'algorithme de Metropolis}
 
-Un outil indispensable pour tous les méthodes de Monte Carlo est l'algorithme de Metropolis et nous allons le décrire ici. 
+Un outil indispensable pour toutes les méthodes de Monte-Carlo est l'algorithme de Metropolis que nous allons décrire ici. 
 
-L'algorithme de Metropolis est un méthode qui nous permet d'échantillonner une distribution de probabilité $P(\mathbf{X})$ dans les cas où l’échantillonnage directe est difficile. En particulier, nous pouvons utiliser cet algorithme si nous savons la distribution de probabilité à une constante multiplicative près. Dans le cas de physique statique, et par extension pour notre cas, cela nous permet de ne pas savoir la fonction de partition (une quantité souvent difficile à calculer sauf dans les cas simples) et échantillonner selon une loi de probabilité (souvent la distribution de Boltzmann)
+L'algorithme de Metropolis est une méthode qui nous permet d'échantillonner une distribution de probabilité $P(\mathbf{X})$ dans les cas où l’échantillonnage direct est difficile. En particulier, nous pouvons utiliser cet algorithme si nous connaissons la distribution de probabilité à une constante multiplicative près. Dans le cas de la physique statistique, et par extension pour notre cas, cela nous permet de contourner le calcul de la fonction de partition (une quantité souvent difficile à calculer sauf dans des cas simples) et échantillonner selon une loi de probabilité (souvent la distribution de Boltzmann).
 
-Concrètement, l'algorithme de Metropolis utilise une chaîne de Markov qui asymptotiquement atteint la une distribution de probabilité $\pi(x)$ telle que $\pi(x) = P(x)$ où $P(x)$ est la distribution de probabilité souhaitée. L'algorithme de Metropolis construit une chaîne de Markov qui satisfait les conditions d'ergodicité et la condition d'existence d'une distribution stationnaire asymptotique. La condition d'existence d'une distribution stationnaire est écrit comme une équation de "balance détailé"
+Concrètement, l'algorithme de Metropolis utilise une chaîne de Markov qui atteint assymptotiquement une distribution de probabilité $\pi(x)$ telle que $\pi(x) = P(x)$ où $P(x)$ est la distribution de probabilité souhaitée. L'algorithme de Metropolis construit une chaîne de Markov qui satisfait les conditions d'ergodicité et la condition d'existence d'une distribution stationnaire asymptotique. La condition d'existence d'une distribution stationnaire est écrit comme une équation de "bilan détaillé" :
 
 \begin{equation}
 \label{detailed_balance}
@@ -378,7 +378,7 @@ Concrètement, l'algorithme de Metropolis utilise une chaîne de Markov qui asym
 
 où $\pi(x)$ est la distribution stationnaire et $P(x \rightarrow x')$ est la probabilité de passage de l'état $x$ à l'état $x'$ pour la chaine de Markov.  
 
-Si la distribution stationnaire $\pi(x) = P(x)$, nous pouvons déduire la probabilité de passage entre deux états pour la chaine de Markov comme suit: 
+Si la distribution stationnaire $\pi(x)$ est égale à $P(x)$, nous pouvons déduire la probabilité de passage entre deux états pour la chaine de Markov comme suit: 
 
 \begin{enumerate} 
 \item 
@@ -392,7 +392,7 @@ P(x) P(x \rightarrow x') &= P(x') P(x' \rightarrow x) \\
 
 \item 
  
-Ensuite, nous décomposons la probabilité de passage en deux parties: une probabilité de proposal $g(x \rightarrow x')$, qui la probabilité conditionnelle de proposer un état $x'$ étant donné un état $x$ et une probabilité d'acceptation $A(x \rightarrow x')$. Donc, la probabilité de passage s'écrit :
+Ensuite, nous décomposons la probabilité de passage en deux parties: une probabilité dite de  "proposal" $g(x \rightarrow x')$, qui est la probabilité conditionnelle de proposer un état $x'$ étant donné un état $x$ et une probabilité d'acceptation $A(x \rightarrow x')$. Donc, la probabilité de passage s'écrit :
 
 \begin{align} 
 \label{derive_2}
@@ -402,14 +402,14 @@ P(x\rightarrow x') &= g(x\rightarrow x') A(x\rightarrow x') \\
 
 \item 
 
-Finalement nous devons choisi une probabilité d'acceptation qui est souvent pris comme: 
+Finalement nous devons choisir une probabilité d'acceptation qui est souvent prise comme: 
 
 \begin{align}
 \label{derive_3}
 A(x\rightarrow x') = \min\left(1,\frac{P(x')}{P(x)}\frac{g(x'\rightarrow x)}{g(x\rightarrow x')}\right)
 \end{align}
 
-Dans le plupart des cas, la probabilité $g(x\rightarrow x')$ est pris uniforme. Ce qui nous amène à une probabilité d'acceptation: 
+Dans le plupart des cas, la probabilité $g(x\rightarrow x')$ est pris uniforme. Ce qui nous amène à une probabilité d'acceptation : 
 
 \begin{empheq}[box=\widefbox]{align}
 \label{metropolis_final}
@@ -418,7 +418,7 @@ A(x\rightarrow x') = \min\left(1,\frac{P(x')}{P(x)}\right)
 
 \end{enumerate} 
 
-Une fois la probabilité d'acceptation dérivée, nous pouvons échantillonner une probabilité de distribution $P(x)$ en utilisant l'algorithme suivant (pour générer un nombre $\lambda$ d'états du système: 
+Une fois la probabilité d'acceptation dérivée, nous pouvons échantillonner une probabilité de distribution $P(x)$ en utilisant l'algorithme suivant pour générer un nombre $\lambda$ d'états du système : 
 
 \begin{enumerate} 
 \item 
@@ -428,10 +428,10 @@ Nous choisissons un nouvel état $x'$ selon la loi uniforme
 \item 
 Nous acceptons l'état $x'$ selon la loi $A(x\rightarrow x')$. Si l'état est accepté, le nouvel état du système est $x'$. Sinon, le système reste dans l'état $x$ (et donc il n'y a pas de transition)
 \item 
-Nous répétons étapes 2 et 3 jusqu'à la génération de $\lambda$ états.
+Nous répétons les étapes 2 et 3 jusqu'à la génération de $\lambda$ états.
 \end{enumerate}
 
-Dans la physique statistique, il est commode de prendre $P(x)$ la distribution de Boltzmann: 
+Dans la physique statistique, il est commode de prendre pour $P(x)$ la distribution de Boltzmann: 
 
 \begin{align} 
 \label{boltzmann_dist}
@@ -439,6 +439,20 @@ P(x) &= \frac{e^{-\beta E_x}}{\mathcal{Z}} \\
 \beta &= \frac{1}{\mathrm{k_B}T}
 \end{align}
 
-où $\mathrm{k_B}$ est le constant de Boltzmann et $T$ est la température du système. $\mathcal{Z}$ est la fonction de partition et $E_x$ est la énergie d'état $x$. Nous observons la grande utilité du méthode de Metropolis: dans la probabilité d'acceptation nous n'avons pas besoin de calculer $\mathcal{Z}$ explicitement puisque ce qui nous intéresse sont les rapports de $P(x)$ et $P(x')$. Pour un système de $N$ bosons en interaction, $\mathcal{Z}$ est une quantité assez difficile à calculer dont l'importance des méthodes numériques fondé sur l'algorithme de Metropolis. 
+
+De même $\mathrm{k_B}$ est la constante de Boltzmann et $T$ est la température du système. 
+
+$\mathcal{Z}$ est la fonction de partition et $E_x$ est la énergie d'état $x$. 
+On définit $\mathcal{Z}$ comme : 
+\begin{align}
+\label{partition}
+\mathcal{Z}=\sum_{\left\lbrace x \right\rbrace} e^{-\beta E_x}
+\end{align}
+où la somme porte sur toutes les configurations possibles de $x$.
+
+ Nous voyons la grande utilité du méthode de Metropolis: dans la probabilité d'acceptation nous n'avons pas besoin de calculer $\mathcal{Z}$ explicitement puisque ce qui nous intéresse sont les rapports de $P(x)$ et $P(x')$. Pour un système de $N$ bosons en interaction, $\mathcal{Z}$ est une quantité assez difficile à calculer dont l'importance des méthodes numériques fondé sur l'algorithme de Metropolis, alors que nous avons tout simplement :
+\begin{equation}
+ 	\frac{P(x)}{P(x')}=e^{-\beta (E_x-E_{x'})}
+\end{equation}
 
 \end{document} 

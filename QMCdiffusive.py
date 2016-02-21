@@ -126,9 +126,17 @@ def gen2partQ(beta,deltat,start,stop,delta=0.15, M=10):
         p2_0.append([np.random.uniform(),np.random.uniform()])
     # p1[M-1]=p1[0]
     # p2[M-1]=p2[0]
+    path_x1 = []
+    path_y1 = []
+    path_x2 = []
+    path_y2 = []
+    for path in (path_x1, path_y1, path_x2, path_y2):
+        for i in range(M):
+            path.append([])
     print len(path_x1)
     p1_t=p1_0
     p2_t=p2_0
+    acc = 0 
     #p1_t[i] = coordonnees de la ieme tranche de la 1ere particule au temps t
     for t in np.arange(start,stop,deltat):
         p1_temp = np.zeros((M,2))
@@ -153,12 +161,14 @@ def gen2partQ(beta,deltat,start,stop,delta=0.15, M=10):
         if temp < ptrans:
             p1_t = p1_temp
             p2_t = p2_temp
-    for i in range(M):
+            acc += 1
+        for i in range(M):
             path_x1[i].append(p1_t[i][0])
             path_y1[i].append(p1_t[i][1])
             path_x2[i].append(p2_t[i][0])
             path_y2[i].append(p2_t[i][1])
-    return path_x1, path_y1, path_x2, path_y2
+    acc = acc*deltat / (stop-start)
+    return path_x1, path_y1, path_x2, path_y2, acc
 
 
 delta = 0.20
@@ -168,8 +178,10 @@ deltat= 0.01
 start = 0.
 stop = 10.
 
-path_x1, path_y1, path_x2, path_y2 = gen2partQ(beta,deltat,start,stop,delta)
+path_x1, path_y1, path_x2, path_y2,acc = gen2partQ(beta,deltat,start,stop,delta)
 print path_x1[1]
+
+print("Acceptance rate : {}").format(acc)
 
 fig = plt.figure(1)
 plt.axis([0,1,0,1])
@@ -180,4 +192,4 @@ z_plot=Vvect(x_mesh, y_mesh, delta)
 plt.contour(x_plot,y_plot,z_plot)
 plt.scatter(path_x1[1],path_y1[1], color='blue')
 plt.scatter(path_x2[1],path_y2[1], color='red')
-# plt.show()
+plt.show()
