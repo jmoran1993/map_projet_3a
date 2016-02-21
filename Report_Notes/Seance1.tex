@@ -461,7 +461,7 @@ Z &= \mathrm{Tr}(e^{-\beta H}) = \int_{\Omega} k_{\beta}(x,x) \mathrm{d}x \\
 \begin{remark}
 Nous devons interpréter les deux termes dans cette dernière relation. Prenons d'abord $\mathbb{E}_{\mathrm{W}_{\beta=0}}$. C'est le terme d’espérance sur les ponts browniens, c'est-à-dire une espérance sur tous les chemins allant de $x_0$ au temps $t=0$ jusqu'au un temps $\beta$ où l'on revient au point de départ $x_{\beta}=x_0$. 
 
-Le deuxième terme en exponentiel représente la création ou annihilation des particules à un point $x+\mathrm{W}_{s}$ donné. Nous formons donc une image de ce processus comme suivant : 
+Le deuxième terme en exponentielle représente la création ou annihilation des particules à un point $x+\mathrm{W}_{s}$ donné. Nous formons donc une image de ce processus comme suivant : 
 
 \begin{enumerate} 
 
@@ -481,7 +481,7 @@ L’espérance sur tous ces trajets nous donne la fonction de partition $Z = \ma
 
 \end{remark}
 
-\section{Bosons}
+\section{Les Systèmes Bosoniques}
 
 Les systèmes bosoniques sont les systèmes quantiques constitué par des bosons. Les bosons sont des particules dont le spin est entier, par opposition aux fermions, dont le spin est demi-entier. Le théorème de spin-statistique, dont les implications seront expliquées dans la suite, engendre des comportements très différents entre les systèmes bosoniques et fermioniques.
 
@@ -513,6 +513,106 @@ où $\rho_{D}$ est la matrice densité pour un système de $N$ particules discer
 
 \section{Méthodes numériques}
 \subsection{L'algorithme Métropolis}
+
+Un outil indispensable pour toutes les méthodes de Monte-Carlo est l'algorithme de Metropolis que nous allons décrire ici. 
+
+L'algorithme de Metropolis est une méthode qui nous permet d'échantillonner une distribution de probabilité $P(\mathbf{X})$ dans les cas où l’échantillonnage direct est difficile. En particulier, nous pouvons utiliser cet algorithme si nous connaissons la distribution de probabilité à une constante multiplicative près. Dans le cas de la physique statistique, et par extension pour notre cas, cela nous permet de contourner le calcul de la fonction de partition (une quantité souvent difficile à calculer sauf dans des cas simples) et échantillonner selon une loi de probabilité (souvent la distribution de Boltzmann).
+
+Concrètement, l'algorithme de Metropolis utilise une chaîne de Markov qui atteint assymptotiquement une distribution de probabilité $\pi(x)$ telle que $\pi(x) = P(x)$ où $P(x)$ est la distribution de probabilité souhaitée. L'algorithme de Metropolis construit une chaîne de Markov qui satisfait les conditions d'ergodicité et la condition d'existence d'une distribution stationnaire asymptotique. La condition d'existence d'une distribution stationnaire est écrit comme une équation de "bilan détaillé" :
+
+\begin{equation}
+\label{detailed_balance}
+\pi(x) P(x \rightarrow x') = \pi(x') P(x' \rightarrow x)
+\end{equation} 
+
+où $\pi(x)$ est la distribution stationnaire et $P(x \rightarrow x')$ est la probabilité de passage de l'état $x$ à l'état $x'$ pour la chaine de Markov.  
+
+Si la distribution stationnaire $\pi(x)$ est égale à $P(x)$, nous pouvons déduire la probabilité de passage entre deux états pour la chaine de Markov comme suit: 
+
+\begin{enumerate} 
+\item 
+Nous écrivons 
+
+\begin{align}
+\label{derive_1}
+P(x) P(x \rightarrow x') &= P(x') P(x' \rightarrow x) \\
+\frac{P(x \rightarrow x')}{P(x' \rightarrow x)} &= \frac{P(x')}{P(x)}
+\end{align} 
+
+\item 
+ 
+Ensuite, nous décomposons la probabilité de passage en deux parties: une probabilité dite de  "proposal" $g(x \rightarrow x')$, qui est la probabilité conditionnelle de proposer un état $x'$ étant donné un état $x$ et une probabilité d'acceptation $A(x \rightarrow x')$. Donc, la probabilité de passage s'écrit :
+
+\begin{align} 
+\label{derive_2}
+P(x\rightarrow x') &= g(x\rightarrow x') A(x\rightarrow x') \\
+\frac{A(x\rightarrow x')}{A(x'\rightarrow x)} &= \frac{P(x')}{P(x)}\frac{g(x'\rightarrow x)}{g(x\rightarrow x')}
+\end{align}
+
+\item 
+
+Finalement nous devons choisir une probabilité d'acceptation qui est souvent prise comme: 
+
+\begin{align}
+\label{derive_3}
+A(x\rightarrow x') = \min\left(1,\frac{P(x')}{P(x)}\frac{g(x'\rightarrow x)}{g(x\rightarrow x')}\right)
+\end{align}
+
+Dans le plupart des cas, la probabilité $g(x\rightarrow x')$ est pris uniforme. Ce qui nous amène à une probabilité d'acceptation : 
+
+\begin{empheq}[box=\widefbox]{align}
+\label{metropolis_final}
+A(x\rightarrow x') = \min\left(1,\frac{P(x')}{P(x)}\right)
+\end{empheq}
+
+\end{enumerate} 
+
+Une fois la probabilité d'acceptation dérivée, nous pouvons échantillonner une probabilité de distribution $P(x)$ en utilisant l'algorithme suivant pour générer un nombre $\lambda$ d'états du système : 
+
+\begin{enumerate} 
+\item 
+Nous commençons avec un état $x$
+\item 
+Nous choisissons un nouvel état $x'$ selon la loi uniforme 
+\item 
+Nous acceptons l'état $x'$ selon la loi $A(x\rightarrow x')$. Si l'état est accepté, le nouvel état du système est $x'$. Sinon, le système reste dans l'état $x$ (et donc il n'y a pas de transition)
+\item 
+Nous répétons les étapes 2 et 3 jusqu'à la génération de $\lambda$ états.
+\end{enumerate}
+
+Dans la physique statistique, il est commode de prendre pour $P(x)$ la distribution de Boltzmann: 
+
+\begin{align} 
+\label{boltzmann_dist}
+P(x) &= \frac{e^{-\beta E_x}}{\mathcal{Z}} \\
+\beta &= \frac{1}{\mathrm{k_B}T}
+\end{align}
+
+
+De même $\mathrm{k_B}$ est la constante de Boltzmann et $T$ est la température du système. 
+
+$\mathcal{Z}$ est la fonction de partition et $E_x$ est la énergie d'état $x$. 
+On définit $\mathcal{Z}$ comme : 
+\begin{align}
+\label{partition}
+\mathcal{Z}=\sum_{\left\lbrace x \right\rbrace} e^{-\beta E_x}
+\end{align}
+où la somme porte sur toutes les configurations possibles de $x$.
+
+ Nous voyons la grande utilité du méthode de Metropolis: dans la probabilité d'acceptation nous n'avons pas besoin de calculer $\mathcal{Z}$ explicitement puisque ce qui nous intéresse sont les rapports de $P(x)$ et $P(x')$. Pour un système de $N$ bosons en interaction, $\mathcal{Z}$ est une quantité assez difficile à calculer dont l'importance des méthodes numériques fondé sur l'algorithme de Metropolis, alors que nous avons tout simplement :
+\begin{equation}
+ 	\frac{P(x)}{P(x')}=e^{-\beta (E_x-E_{x'})}
+\end{equation}
 \subsection{Monte-Carlo Diffusif}
 Munis ainsi de la 
+
+\subsection{Path-Integral Monte-Carlo}
+
+\newpage
+\begin{thebibliography}{analytique}
+\bibitem{Ceperley}D.M. Ceperley, \textit{Path integrals in the theory of condensed helium}, Reviews of Modern Physics, Vol. 67, No. 2, Avril 1995.
+\bibitem{cances}Éric Cancès, Notes de Cours, M2 ANEDP.
+\bibitem{feynman}R.P. Feynman, A.R. Hibbs, \textit{Quantum Mechanics and Path Integrals}, MacGraw Hill, 1965.
+\bibitem{krauth} Werner Krauth, \textit{Statistical Mechanics : Algorithms and Computation}, MOOC disponible sur \href{http://coursera.org}, École Normale Supérieure. 
+\end{thebibliography}
 \end{document}
