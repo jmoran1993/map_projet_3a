@@ -255,3 +255,23 @@ def gen_2part(beta,deltat,start,stop,delta=0.15):
 # 	if i % 10 == 0:
 # 		plt.scatter(path_x[i],path_y[i])
 # 		plt.draw()
+
+delta = 0.15
+fig = plt.figure(1)
+# ax = fig.add_subplot(111, projection = '3d')
+x = np.linspace(0,1,200)
+y = np.linspace(0,1,200)
+x,y=np.meshgrid(x,y)
+
+
+z = Vvect(x,y,delta)
+
+x_plot = np.linspace(0,1,200)
+y_plot = np.linspace(0,1,200)
+x_mesh, y_mesh = np.meshgrid(x_plot, y_plot)
+plt.xlabel("x")
+plt.ylabel("y")
+z_plot=Vvect(x_mesh, y_mesh, delta)
+plt.contour(x_plot,y_plot,z_plot)
+
+plt.show()

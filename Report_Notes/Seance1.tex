@@ -47,7 +47,7 @@ Dans cet EA nous nous sommes intéressés à différentes méthodes
 
 
 \newpage
-\section{Fonction de partition d'un système quantique}
+\section{Fonction de partition d'un système quantique}\label{sec:part}
 On se propose d'étudier un système équivalent à deux particules identiques (même masse donc) dans une boîte à $d$ dimensions, par exemple deux particules dans la boîte $[0;1]^d$ avec des conditions périodiques et l'hamiltonien :
 \begin{equation}
 \hham = -\frac{\hbar^2}{2m}\sum_{i=1}^{d}\left( \frac{\partial^2}{\partial x_{1,i}}+\frac{\partial^2}{\partial x_{2,i}}\right)+v(x_1)+v(x_2)+w(x_1,x_2)
@@ -181,7 +181,7 @@ Z(\beta)=\mathrm{Tr}(e^{-\beta H})& \simeq \mathrm{Tr}(h_M^M)
 
 Où l'intégrale ci-dessus s'interprète comme l'intégrale de la pseudo-action $S_M$ le long d'un chemin qui part de $X$ et revient vers $X$ en temps $\beta$ fini.
 
-\section{Mouvement Brownien, Calcul d'Itô et formule de Feynman-Kac}
+\section{Mouvement Brownien, Calcul d'Itô et formule de Feynman-Kac}\label{sec:brown}
 Dans cette partie nous décrirons une méthode probabiliste pour évaluer le noyau $k_{\beta}$ que nous avons décrit dans la section précédente. 
 Avant de commencer le calcul de $k_{\beta}$, nous allons introduire quelques notions utiles.
 
@@ -481,7 +481,7 @@ L’espérance sur tous ces trajets nous donne la fonction de partition $Z = \ma
 
 \end{remark}
 
-\section{Les Systèmes Bosoniques}
+\section{Les Systèmes Bosoniques}\label{sec:bosons}
 
 Les systèmes bosoniques sont les systèmes quantiques constitué par des bosons. Les bosons sont des particules dont le spin est entier, par opposition aux fermions, dont le spin est demi-entier. Le théorème de spin-statistique, dont les implications seront expliquées dans la suite, engendre des comportements très différents entre les systèmes bosoniques et fermioniques.
 
@@ -511,8 +511,8 @@ Vu qu'un état complet d'un système bosonique contient tous les permutations po
 
 où $\rho_{D}$ est la matrice densité pour un système de $N$ particules discernables. Pour des particules discernables, des particules classiques par exemple, nous pouvons commencer avec un ensemble des points $\mathbf{X}$ donné et retourner à ce même point. Cependant, pour les particules comme des bosons(ou des fermions), nous pouvons arriver vers un point $P\mathbf{X}$, c'est-à-dire une permutation de l'ensemble $\mathbf{X}$. Ainsi, en effectuant un calcul d’intégrale de chemin pour un système bosonique, nous devons sommer non seulement sur tous les chemins allant du point $X$ à $X'$, mais sur tous les chemins partant de $X$ et arrivant en $PX'$. Cela fait à la fois la richesse du comportement des bosons mais aussi la difficulté technique à laquelle nous devons faire face. 
 
-\section{Méthodes numériques}
-\subsection{L'algorithme Métropolis}
+\section{Méthodes numériques}\label{sec:num}
+\subsection{L'algorithme Métropolis}\label{ssec:metropolis}
 
 Un outil indispensable pour toutes les méthodes de Monte-Carlo est l'algorithme de Metropolis que nous allons décrire ici. 
 
@@ -604,8 +604,54 @@ où la somme porte sur toutes les configurations possibles de $x$.
  	\frac{P(x)}{P(x')}=e^{-\beta (E_x-E_{x'})}
 \end{equation}
 \subsection{Monte-Carlo Diffusif}
-Munis ainsi de la 
+Munis ainsi des outils théoriques des parties précédentes, notamment du pseudo-potentiel de la partie \ref{sec:part}, de l'équation de diffusion et la formule de Feynman-Kac présente dans la section \ref{sec:brown}, il est possible maintenant de proposer une méthode numérique pour simuler les particules décrites dans la section \ref{sec:part} : deux particules identiques dans une boîte de deux dimensions avec des conditions aux bords périodiques, soumises à un potentiel global et à un potentiel d'intéraction.
 
+Pour faire cela, nous avons considéré le carré $[0;1]\times[0;1]$ avec des conditions aux bords périodiques. 
+
+Pour définir le potentiel global que ressentiront les deux particules, nous avons d'abord utilisé la fonction définie par :
+\begin{equation}
+\label{eq:eofx}
+E(x)=\left\{\begin{matrix}
+e^{\frac{\alpha}{x}} \mbox{ si }x<0\\
+0 \mbox{ sinon.}
+
+\end{matrix}\right.
+\end{equation}
+
+Pour une constante $\alpha$ bien choisie. Cette fonction a l'avantage d'être de classe $\mathcal{C}^{\infty}$, d'être non nulle sur $\mathrm{R}^{-}$ et nulle sur $\mathrm{R}^{+}$. Elle permet de construire des fonctions de classe $\mathcal{C}^{\infty}$ à support compact, comme par exemple, pour $a<b$ : 
+\begin{equation}
+\label{eq:blip}
+b_{(a,b)}(x)=\gamma E(a-x)E(b-x)
+\end{equation}
+
+Qui est une fonction nulle en dehors de l'intervalle $[a;b]$, mais non nulle à l'intérieur. La constante $\gamma$ est choisie de façon à avoir $b_{(a,b)}(\frac{a+b}{2})=1$. Un exemple est visible dans la Figure \ref{fig:blip}.
+
+\begin{figure}[h]
+\begin{center}
+\label{fig:blip}
+\includegraphics[width=10cm]{blip.png}
+\caption{Graphe de la fonction $b_{(a,b)}(x)$, pour $(a,b)=(0;0,7)$ et avec $\alpha=0.4$.}
+\end{center}
+\end{figure}
+
+Ainsi en utilisant cette fonction, nous avons défini un potentiel à deux dimensions qui a l'allure suivante 
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.5\textwidth}
+	\centering
+	\label{fig:pot}
+	\includegraphics[width=10cm]{potentiel.png}
+	\caption{Allure du potentiel $V(x,y)$.}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+	\centering	
+	\label{fig:equipot}
+	\includegraphics[width=10cm]{equipot.png}
+	\caption{Allure des équipotentielles de $V(x,y)$.}
+\end{subfigure}
+\caption{Potentiel global utilisé ainsi que les équipotentielles.}
+\end{figure}
 \subsection{Path-Integral Monte-Carlo}
 
 \newpage
