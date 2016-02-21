@@ -481,6 +481,36 @@ L’espérance sur tous ces trajets nous donne la fonction de partition $Z = \ma
 
 \end{remark}
 
+\section{Bosons}
+
+Les systèmes bosoniques sont les systèmes quantiques constitué par des bosons. Les bosons sont des particules dont le spin est entier, par opposition aux fermions, dont le spin est demi-entier. Le théorème de spin-statistique, dont les implications seront expliquées dans la suite, engendre des comportements très différents entre les systèmes bosoniques et fermioniques.
+
+En effet en mécanique quantique, l'état d'un système est décrit par un vecteur d'état $|\psi \rangle$, qui contient toute l'information du système. Cet état évolue selon la fameuse équation de Schroedinger. Le fait que les bosons ont un spin entier et les fermions un spin demi-entier a des implications sur les propriétés de $| \psi \rangle$. En effet lorsqu'on considère $N$ particules, l'état total du système est noté :
+\begin{equation}
+|\psi^{(1)},\psi^{(2)},\ldots,\psi^{(N)}\rangle
+\end{equation}
+
+On considère alors l'opérateur $P_{ij}$ qui échange les particules $i$ et $j$. Il s'agit d'un opérateur auto-adjoint, et il est évident que $P_{ij}^2=1$. Les valeurs propres de $P_{ij}$ sont alors $\pm 1$. Le théorème de spin-statistique nous assure alors que $P_{ij}=1$ pour les bosons et $P_{ij}=-1$ pour les fermions.
+
+En particulier, l’état décrivant un système de $N$ bosons est symétrique par échange de deux particules tandis qu'il est antisymétrique pour des fermions. C'est-à-dire que pour les états de $N$ bosons ou de $N$ fermions peuvent être écrits de la manière suivante : 
+
+\begin{align} 
+\label{symetrie_boson_fermion}
+|\psi^{(1)},\psi^{(2)},\ldots,\psi^{(N)}\rangle_B &= \sqrt{\frac{1}{N!}} \sum_P |\psi^{P(1)},\psi^{P(2)},\ldots,\psi^{P(N)}\rangle \\
+|\psi^{(1)},\psi^{(2)},\ldots,\psi^{(N)}\rangle_F &= \frac{1}{\sqrt{N!}} \sum_P \sigma (P) |\psi^{P(1)},\psi^{P(2)},\ldots,\psi^{P(N)}\rangle
+\end{align}
+
+où $B$ est pour les bosons, $F$ pour les fermions. Ici la somme porte sur touts les états possible sous une permutation $P$ de $\left\lbrace 1\ldots N\right\rbrace$. La racine est prise afin de normaliser l'état. Finalement, $\sigma (P)$ est la signature de la permutation $P$ (+1 si $P$ contient un nombre paire de transpositions et -1 sinon). 
+
+Vu qu'un état complet d'un système bosonique contient tous les permutations possible de $N$ particules, nous devons prendre en compte cette symétrie dans notre modélisation des systèmes bosoniques par une intégrale de chemin. Concrètement, cela implique que pour un système des bosons, la matrice densité s'écrit de la manière suivante: 
+
+\begin{align} 
+\label{densite_boson}
+\rho_{B}( \mathbf{X}, \mathbf{X}'; \beta) = \frac{1}{N!}\sum_{\mathcal{P}} \rho_{D} (\mathbf{X}, P \mathbf{X}'; \beta)
+\end{align}
+
+où $\rho_{D}$ est la matrice densité pour un système de $N$ particules discernables. Pour des particules discernables, des particules classiques par exemple, nous pouvons commencer avec un ensemble des points $\mathbf{X}$ donné et retourner à ce même point. Cependant, pour les particules comme des bosons(ou des fermions), nous pouvons arriver vers un point $P\mathbf{X}$, c'est-à-dire une permutation de l'ensemble $\mathbf{X}$. Ainsi, en effectuant un calcul d’intégrale de chemin pour un système bosonique, nous devons sommer non seulement sur tous les chemins allant du point $X$ à $X'$, mais sur tous les chemins partant de $X$ et arrivant en $PX'$. Cela fait à la fois la richesse du comportement des bosons mais aussi la difficulté technique à laquelle nous devons faire face. 
+
 \section{Méthodes numériques}
 \subsection{L'algorithme Métropolis}
 \subsection{Monte-Carlo Diffusif}
