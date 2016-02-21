@@ -5,3 +5,8 @@
 *.out
 *.synctex.gz
 *.toc
+
+## C++ compilation stuff 
+
+*.exe
+*.o

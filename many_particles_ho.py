@@ -15,7 +15,7 @@ def grad_potential(x, m=1.0, omega=1.0):
 ## global parameters
 
 tau = 0.5 ## imaginary time period
-M = 50 ## Number of time slices 
+M = 100 ## Number of time slices 
 delta_tau = tau/M ## imaginary time step
 
 n_bins = 100 ## for histogram 
@@ -53,7 +53,7 @@ def metropolis_step(pos_x_new, pos_x):
 
 ## Thermalization step 
 
-thermal_steps = 5
+thermal_steps = int(mc_steps/5)
 accepted_steps = 0
 
 ##I have to pass a mutable variable into the function metropolisy step 
