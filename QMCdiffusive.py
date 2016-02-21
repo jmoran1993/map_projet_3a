@@ -121,9 +121,13 @@ def gen2partQ(beta,deltat,start,stop,delta=0.15, M=10):
     #Definition des deux particules 
     p1_0 = []
     p2_0 = []
+    p1 = [np.random.uniform(), np.random.uniform()]
+    p2 = [np.random.uniform(), np.random.uniform()]
     for i in range(M):
-        p1_0.append([np.random.uniform(),np.random.uniform()])
-        p2_0.append([np.random.uniform(),np.random.uniform()])
+        # p1_0.append([np.random.uniform(),np.random.uniform()])
+        # p2_0.append([np.random.uniform(),np.random.uniform()])
+        p1_0.append(p1)
+        p2_0.append(p2)
     # p1[M-1]=p1[0]
     # p2[M-1]=p2[0]
     path_x1 = []
@@ -137,6 +141,7 @@ def gen2partQ(beta,deltat,start,stop,delta=0.15, M=10):
     p1_t=p1_0
     p2_t=p2_0
     acc = 0 
+    energy = 0
     #p1_t[i] = coordonnees de la ieme tranche de la 1ere particule au temps t
     for t in np.arange(start,stop,deltat):
         p1_temp = np.zeros((M,2))
@@ -145,16 +150,22 @@ def gen2partQ(beta,deltat,start,stop,delta=0.15, M=10):
             p1_temp[i]=(p1_t[i]-deltat*(gradV(p1_t[i][0],p1_t[i][1],delta)+gradWpart(p1_t[i],p2_t[i],delta))\
             +sigma*np.sqrt(deltat)*np.random.normal(0,1,(2))\
             -deltat*np.asarray(quantInterGrad(p1_t[i],p1_t[(i+1)%M],beta,sigma)))%1
+
             p2_temp[i]=(p2_t[i]-deltat*(gradV(p1_t[i][0],p1_t[i][1],delta)+gradWpart(p2_t[i],p1_t[i],delta))\
             +sigma*np.sqrt(deltat)*np.random.normal(0,1,(2))\
             -deltat*np.asarray(quantInterGrad(p2_t[i],p2_t[(i+1)%M],beta,sigma)))%1
         energy_t = 0
         energy_temp = 0
+        energie = 0 
         for i in range(M):
             energy_t = energy_t + Vpart(p1_t[i],delta)+Vpart(p2_t[i],delta)+Wpart(p1_t[i],p2_t[i],delta)\
             +quantInter(p1_t[i],p1_t[(i+1)%M],beta,sigma)+quantInter(p2_t[i],p2_t[(i+1)%M],beta,sigma)
+
             energy_temp = energy_temp + Vpart(p1_temp[i],delta)+Vpart(p2_temp[i],delta)+Wpart(p1_temp[i],p2_temp[i],delta)\
             +quantInter(p1_temp[i],p1_temp[(i+1)%M],beta,sigma)+quantInter(p2_temp[i],p2_temp[(i+1)%M],beta,sigma)
+
+            energie = energie+ Vpart(p1_temp[i],delta)+Vpart(p2_temp[i],delta)+Wpart(p1_temp[i],p2_temp[i],delta)
+
         ratio = np.exp(-beta*(energy_temp-energy_t))
         ptrans = min(1,ratio)
         temp = np.random.uniform()
@@ -162,31 +173,36 @@ def gen2partQ(beta,deltat,start,stop,delta=0.15, M=10):
             p1_t = p1_temp
             p2_t = p2_temp
             acc += 1
+            energy += energie
         for i in range(M):
             path_x1[i].append(p1_t[i][0])
             path_y1[i].append(p1_t[i][1])
             path_x2[i].append(p2_t[i][0])
             path_y2[i].append(p2_t[i][1])
+    energy = energy/(acc*M)
     acc = acc*deltat / (stop-start)
-    return path_x1, path_y1, path_x2, path_y2, acc
+
+    return path_x1, path_y1, path_x2, path_y2, acc,energy
 
 
 delta = 0.20
 
 beta = 10
-deltat= 0.01
+deltat= 0.001
 start = 0.
 stop = 10.
 
-path_x1, path_y1, path_x2, path_y2,acc = gen2partQ(beta,deltat,start,stop,delta)
-print path_x1[1]
+path_x1, path_y1, path_x2, path_y2,acc,energy = gen2partQ(beta,deltat,start,stop,delta)
 
 print("Acceptance rate : {}").format(acc)
+print("Average Energy : {}").format(energy)
 
 fig = plt.figure(1)
 plt.axis([0,1,0,1])
 x_plot = np.linspace(0,1,200)
 y_plot = np.linspace(0,1,200)
+plt.xlabel("x")
+plt.ylabel("y")
 x_mesh, y_mesh = np.meshgrid(x_plot, y_plot)
 z_plot=Vvect(x_mesh, y_mesh, delta)
 plt.contour(x_plot,y_plot,z_plot)
