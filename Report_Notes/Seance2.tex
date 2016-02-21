@@ -334,4 +334,36 @@ L’espérance sur tous ces trajets nous donne la fonction de partition $Z = \ma
 
 
 \end{remark}
+
+
+\section{Methodes numeriques}
+
+Dans cette partie nous allons décrire les méthodes numériques utilisés afin de simuler les systèmes bosoniques. Mais avant de parler des méthodes numériques, nous allons décrire, en quelques mots, les systèmes bosoniques. 
+
+\subsection{Systemes Bosoniques} 
+
+Les systèmes bosoniques sont des systèmes constitué par des bosons. Les bosons, en mécanique quantique, sont des particules portant un nombre quantique dit "nombre quantique de spin" (ou \emph{Spin Quantum Number}) et ce nombre est toujours un entier. Dans la nature, il existe d'autres particules qui portent un spin qui est toujours un demi-entier: ceux sont des bosons. La différence entre les spins de bosons et fermions engendrent des grandes differences dans les comportements des systèmes constitués par des nombreuses particules de même type. 
+
+En mécanique quantique, l'état de chaque système est gouverné par un état $|\psi \rangle$, qui contient toute l'information du système. Cet état évolue selon la fameuse équation de Schroedinger. Le fait que les bosons ont un spin entier et les fermions un spin demi entier a des implication sur les propriétés de l'état $| \psi \rangle$. En particulier, l’état décrivant un système de $N$ bosons est symétrique par échange de deux bosons tandis que l'état est antisymétrique pour des fermions. C'est-à-dire que pour un système comprenant $N$ bosons ou $N$ fermions, nous avons les relations suivantes: 
+
+\begin{align} 
+\label{symetrie_boson_fermion}
+|n_1 n_2 \cdots n_N; B\rangle &= \sqrt{\frac{\prod_n m_n!}{N!}} \sum_p |n_{p(1)}\rangle |n_{p(2)}\rangle \cdots |n_{p(N)}\rangle \\
+|n_1 n_2 \cdots n_N; F\rangle &= \frac{1}{\sqrt{N!}} \sum_p \operatorname{sgn}(p) |n_{p(1)}\rangle |n_{p(2)}\rangle \cdots |n_{p(N)}\rangle
+\end{align}
+
+où $B$ est pour les bosons, $F$ pour les fermions. Ici la somme porte sur touts les états possible sous une permutation $p$ de $N$ particules. La racine est pris afin de normaliser l'état. Finalement, $\operatorname{sgn}(p)$ est la signe de la permutation $p$ (+1 si $p$ contient un nombre paire des transpositions et -1 sinon). 
+
+Vu qu'un état complet d'un système bosonique contient tous les permutations possible de $N$ particules, nous devons prendre en compte cette symétrie dans notre modélisation des systèmes bosoniques par un intégral de chemin. Concrètement, cela implique que pour un système des bosons, la matrice de densité est écrit de la manière suivante: 
+
+\begin{align} 
+\label{densite_boson}
+\rho_{B}( \mathbf{R}, \mathbf{R}'; \beta) = \frac{1}{N!}\sum_{\mathcal{P}} \rho_{\mathrm{D}} (\mathbf{R}, \mathcal{P} \mathbf{R}'; \beta)
+\end{align}
+
+où $\rho_{\mathrm{D}}$ est la matrice de densité pour un système de $N$ particules distinguables. Pour les particules distinguables comme les particules classiques, nous pouvons commencer à un ensemble des points $\mathbf{R}$ donné et retourner à ce même point. Cependant, pour les particules comme des bosons(ou des fermions), nous pouvons arriver à un point $\mathcal{P}\mathbf{R}$, c'est-à-dire une permutation d'ensemble $\mathbf{R}$. Donc, en effectuant un calcul d’intégrale de chemin pour un système bosonique, nous devons sommer pas seulement sur tous les chemins allant de point $\mathbf{R}$ à $\mathbf{R}'$, mais sur tous les chemins partant de $\mathbf{R}$ et aboutissant à $\mathcal{P}\mathbf{R}'$. Cela fait à la fois la richesse dans le comportement des bosons mais aussi un problème technique dont nous devons faire face. 
+
+\subsection{L'algorithme Metrpolis}
+
+
 \end{document} 
