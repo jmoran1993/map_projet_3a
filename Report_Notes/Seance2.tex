@@ -547,4 +547,40 @@ où la probabilité conditionnelle $\pi^{\mathrm{oh}}$ a la même forme que \eqr
 \caption{6 chemins de Lévy construit pour différents points de départ.}
 \end{figure} 
 
+\subsubsection{Permutation Sampling} 
+
+Nous passons maintenant à l’étape le plus délicat en ce qui concerne la simulations des bosons, c'est-à-dire les permutations. Nous avons déjà évoqué ci-dessus que les bosons ayant un spin entier doivent avoir une fonction d'onde symétrique. Cela implique que dans les chemins que nous traçons entre deux points $\mathbf{R}$ et $\mathbf{R'}$ donnés, nous devons prendre en compte toutes les permutations $\mathcal{P}\mathbf{R}'$ aussi. Pour un système à $N$ particules, le nombre totale des permutations devient très grand (puisque en $N!$). C'est pour cette raison là que nous devons échantillonner les permutations aussi. 
+
+Commençons par un cas simple: un système à deux bosons n'ayant pas une terme d'interaction entre les deux. Les chemins possible entre deux points fixes pour ces deux particules doivent être interchangeable puisque ceux sont des particules indiscernables. Une type de permutations est très simple: nous pouvons juste échanger les chemins entre les deux particules. 
+
+\begin{figure}[!h]
+\label{levy_paths_exchange}
+\centering 
+\includegraphics{levy_paths_2.png}
+\caption{L'échange entre les particules} 
+\end{figure} 
+
+Cependant, nous avons un choix de permuter les positions intermédiaires entre deux points quelconques aussi. C'est ici que nous utilisons le méthode de Lévy afin d’effectuer une permutation entre deux points quelconques sur les chemins des deux particules. Nous ferons de la façon suivante: 
+
+\begin{enumerate} 
+\item 
+Tout d'abord nous choisissons deux instant $\tau_1$ et $\tau_2$ entre lesquels nous voulons effectuer un échange. 
+\item 
+Ensuite, nous supprimons les parties de chemins entre ces deux instants pour ces deux instants pour les deux particules. Pour les parties restantes hors de ces deux instants, nous échangeons les chemins entre les deux particules comme montré plus haut. 
+\item 
+Une fois échangé, nous créons deux nouveaux sous-chemins entre les instants $\tau_1$ et $\tau_2$ avec la construction de Lévy. La construction est faite comme ci les particules étaient libres. Nous avons maintenant deux nouveaux chemins qui ont des positions permutés. 
+\item 
+Finalement, comment choisissons nous si nous devons accepter ces deux chemins? Pour cela, nous comparons la différence d'énergie telle qu'il est décrit en \eqref{energie_trotter} mais cette fois les valeurs de $M$ sont celles qui correspondent aux instants $\tau_1$ et $\tau_2$. Donc, nous avons une probabilité d'acceptation: 
+
+\begin{equation}
+\label{acceptance_levy} 
+A(\mathrm{old}\rightarrow \mathrm{new}) = \min\left(1,\frac{\mathrm{exp}(-\beta E_{\mathrm{new}})}{\mathrm{exp}(-\beta E_{\mathrm{old}})}\right)
+\end{equation}
+
+où $E_\mathrm{new}$ and $E_\mathrm{old}$ sont des nouvelles et anciennes énergies calculées pour les anciens et les nouveaux chemins selon la formule \eqref{energie_trotter}. 
+\end{enumerate}
+
+Cela termine notre algorithme de permutation pour deux particules. Pour plus de particules, nous devons prendre en compte les nombres de voisins de chacun de deux particules qui se trouve à une distance critique donné. Ce dernier est très important quand nous devons prendre en compte les interactions entre les particules. Mais quand ce n'est pas le cas et que les particules évoluent sans interaction entre eux, nous pouvons effectuer l'algorithme décrit ci-dessus. 
+
+
 \end{document} 
