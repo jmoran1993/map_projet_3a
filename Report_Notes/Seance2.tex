@@ -494,5 +494,57 @@ Nous traçons par la suite la variation d’énergie moyenne en fonction de $\ta
 \caption{Variation d’énergie moyenne en fonction de $\tau$.}
 \end{figure}
 
+\subsubsection{Sampling de Levy} 
+
+Nous savons que l’intégrale de chemin est un outil très puissant. Toutefois, nous avons remarquer lors des simulations que le méthode décrit plus haut n'était pas rapide et il nous fallait beaucoup d’itérations pour trouver les bons chemins. Pour affranchir cette difficulté, nous avons décidé d'utiliser le méthode de \textbf{Levy Sampling}. De manière générale, le sampling de Lévy généralise l’interpolation polynomiales ou trigonométriques en construisant une interpolation stochastique entre deux points $x_0$ et $x_N$. Donc, entre deux points dans l'intervalle $[\tau_1, \tau_2]$, le chemin reliant $x(\tau_1)$ à $x(\tau_2)$ est l'interpolation stochastique entre ces deux points et de plus le comportement de ce chemin hors de cet intervalle n'a pas d'importance. Nous décrivons dans la suite l'utilité de cette méthode et nous proposons à la fin une méthode qui nous permettra de échantillonner les permutations. 
+
+Nous partons d'un point $x_k$ compris entre deux positions fixes $x'$ et $x''$. Nous voulons trouver la probabilité conditionnelle qui le chemin reliant $x'$ et $x''$ passe par le point $x_k$. Pour cela nous avons:
+
+\begin{equation}
+\label{proba_levy_1}
+\pi^{\mathrm{libre}}(x_k|x',x'') \propto \rho^{\mathrm{libre}}(x', x_k, \Delta_{\tau}') \rho^{\mathrm{libre}}(x_k, x'', \Delta_{tau}'')
+\end{equation} 
+
+où les $\rho^{\mathrm{libre}}$ sont des matrices de densité correspondants à des particules libre et qui s'écrivent comme: 
+
+\begin{align}
+\label{rho_free_levy}
+\rho^{\mathrm{libre}}(x', x_k, \Delta_{\tau}') &\propto \mathrm{exp}\Big[ - \frac{(x'-x_k)^2}{2\Delta_{\tau}'} \Big] \\
+\rho^{\mathrm{libre}}(x_k, x'', \Delta_{\tau}'') &\propto \mathrm{exp}\Big[ - \frac{(x_k-x'')^2}{2\Delta_{\tau}''} \Big]
+\end{align}
+
+En explicitant les termes dans les exponentielles nous trouvons que: 
+
+\begin{align} 
+\label{rho_free_levy_2}
+\pi^{\mathrm{libre}}(x_k|x',x'') \propto \mathrm{exp}\Big[ - \frac{(x_k - \langle x_k \rangle)^2}{2 \sigma^2} \Big]
+\end{align}
+
+où 
+\begin{align} 
+\langle x_k \rangle &= \frac{\Delta_{\tau}'' x' + \Delta_{\tau}'x''}{\Delta_{\tau}' + \Delta_{\tau}''} \\
+\sigma^2 &= \Big(\frac{1}{\Delta_{\tau}''} + \frac{1}{\Delta_{\tau}'}\Big)^{-1}
+\end{align}
+
+Nous remarquons que cette expression nous permet d'échantillonner les points entre deux points donnée $x'$ et $x''$. En particulier, entre $x_0$ et $x_N$, nous pouvons échantillonner le point $x_1$, entre $x_1$ et $x_N$ un point $x_2$, un point $x_3$ etc. jusqu'à la génération de tout le chemin $[x_1 \cdots x_{N-1}]$. Ce méthode nous permet finalement de créer un chemin allant de $x_0$ jusqu'à $x_N$ sans réjection. Concrètement pour générer un chemin entre deux points quelconque, il suffit de échantillonner d'une distribution gaussienne avec l'écart type $\sigma$ pour chaque tranche entre le point de départ $x_0$ et le point d'arrivée $x_N$. 
+
+Dans le cas de l'oscillateur harmonique, nous avons les paramètres suivants: 
+
+\begin{align}
+\label{levy_parameters_ho}
+\langle x_k \rangle &= \frac{\Gamma_1}{\Gamma_2} \\
+\sigma^2 &= \frac{1}{\Gamma_1} \\
+\Gamma_1 &= \coth{\Delta_{\tau}'} + \coth{\Delta_{\tau}''} \\
+\Gamma_2 &= \frac{x'}{\sinh{\Delta_{\tau}'}} + \frac{x''}{\sinh{\Delta_{tau}''}}
+\end{align}
+
+où la probabilité conditionnelle $\pi^{\mathrm{oh}}$ a la même forme que \eqref{rho_free_levy_2}. 
+
+\begin{figure}[!h]
+\label{levy_paths}
+\centering 
+\includegraphics[width=10cm]{levy_paths.png}
+\caption{6 chemins de Lévy construit pour différents points de départ.}
+\end{figure} 
 
 \end{document} 
