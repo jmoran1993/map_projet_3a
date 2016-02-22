@@ -163,21 +163,26 @@ for temp in tempt:
     print "Acceptance rate : {}".format(acc)
     print "Energy : {}".format(energy)
 
-#temp = [1/beta for beta in betat]
+temp = [1/beta for beta in betat]
 plt.plot(tempt, energyt)
+plt.xlabel("Temperature")
+plt.ylabel("Energie moyenne")
 plt.show()
 
+# path_x1, path_y1, path_x2, path_y2, acc, energy = gen2part(6, deltat,start,stop,delta)
+
 # fig = plt.figure(1)
-# #plt.scatter(np.asarray(path_x1),np.asarray(path_y1), color='blue')
-# #plt.scatter(np.asarray(path_x2),np.asarray(path_y2), color='red')
+# scat1 = plt.scatter(np.asarray(path_x1),np.asarray(path_y1), color='blue')
+# scat2 = plt.scatter(np.asarray(path_x2),np.asarray(path_y2), color='red')
 # plt.axis([0,1,0,1])
 # x_plot = np.linspace(0,1,200)
 # y_plot = np.linspace(0,1,200)
 # x_mesh, y_mesh = np.meshgrid(x_plot, y_plot)
 # z_plot=Vvect(x_mesh, y_mesh, delta)
+# plt.legend((scat1,scat2), ('Particule 1', 'Particule 2'),scatterpoints=1, loc='lower left')
+# plt.xlabel("x")
+# plt.ylabel("y")
 # plt.contour(x_plot,y_plot,z_plot)
-# plt.ion()
-# text = plt.text(0.1,0.9, "Iteration : ")
 
 # plt.show()
 

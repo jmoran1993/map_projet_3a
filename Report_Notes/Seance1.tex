@@ -1,5 +1,5 @@
 \documentclass[11pt]{article}
-\usepackage[coverpage]{polytechnique}
+\usepackage[fancysections, coverpage]{polytechnique}
 \usepackage[utf8]{inputenc}     
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -32,7 +32,7 @@
 
 \title{Enseignement d'Approfondissement}
 \date{Décembre-Février 2016}
-\author{Dhruv SHARMA \\ José MORAN}
+\author{José MORAN \\ Dhruv SHARMA}
 \subtitle{Simulation d'un système bosonique avec des intégrales de chemin}
 
 \newcommand{\hham}{\hat{H}}
@@ -43,8 +43,12 @@
 \tableofcontents
 \newpage
 \section*{Introduction}
-Dans cet EA nous nous sommes intéressés à différentes méthodes 
+Dans cet EA nous nous sommes intéressés à différentes méthodes numériques stochastiques de simulation de systèmes quantiques. \\
 
+Nous nous proposons de simuler un système de bosons en interaction dans un potentiel uniforme à l'aide de deux méthodes : la méthode de Monte-Carlo diffusif, où on fait une marche au hasard dans le potentiel, ainsi que la méthode de Monte-Carlo d'intégrale de chemin (mieux connue comme Path-Integral Monte-Carlo ou PIMC). Dans ces deux méthodes, on fait une marche aléatoire dans des chaînes de Markov en utilisant le très connu algorithme de Métropolis. Enfin la grande difficulté de simuler des bosons est qu'il faut également pouvoir faire des tirages aléatoires sur les permutations entre particules avec une bonne loi de probabilité. 
+\\
+
+Ainsi pour étudier ce problème, qui revient à vouloir calculer la fonction de partition du système, nous présenterons d'abord une formulation du problème, à l'aide de la formule de Trotter, qui permet de le voir comme une intégrale de chemin. Ensuite, nous présenterons quelques résultats sur le mouvement brownien et le calcul d'Itô, qui nous permettront d'aboutir sur la formule de Feynman Kac. Enfin nous présenterons les différentes méthodes numériques que nous avons utilisées, les résultats que nous avons obtenus ainsi que l'algorithme que nous avons voulu implémenter pour faire des tirages sur les permutations.
 
 \newpage
 \section{Fonction de partition d'un système quantique}\label{sec:part}
@@ -668,12 +672,186 @@ Regardons d'abord comment simuler le système classique. Ainsi on définit un pr
 X^{i}_{t+1}=X^{i}_t-\vec{\nabla}V_{tot}(X^{i}_t,X^j_t)+\sigma \sqrt{\Delta t}\xi_t
 \end{equation} 
 
-Où on définit $\sigma =\frac{\sqrt{2}}{\beta}$, avec $\beta=\frac{1}{T}$ où $T$ est la température (on prend des unités naturelles où $k_B=1$. De même $\xi_t$ sont des variables gaussiennes i.i.d. de moyenne nulle et variance $1$. Il va de soi que $j\neq i$.
+Où on définit $\sigma =\frac{\sqrt{2}}{\beta}$, avec $\beta=\frac{1}{T}$ où $T$ est la température (on prend des unités naturelles où $k_B=1$. De même $\xi_t$ sont des variables gaussiennes i.i.d. de moyenne nulle et variance $1$. $V_{tot}$ est le potentiel agissant sur la particule $i$, c'est à dire le potentiel global plus le potentiel d'interaction de $X^{i}_t$ avec $X^{j}_t$. Il va de soi que $j\neq i$.
 
-Chaque pas est accepté en utilisant l'algorithme de Métropolis que nous avons décrit plus haut.
+Une fois qu'on fait ce déplacement pour la $i^{eme}$ particule, on déplace les autres particules de la même manière. Chaque pas est accepté en utilisant l'algorithme de Métropolis que nous avons décrit plus haut. C'est à dire qu'on calcule l'énergie correspondante à la nouvelle configuration $E_{nouvelle}$ en additionnant les énergies de chaque particule dans la nouvelle configuration grace à $V$, et on aditionne l'énergie d'intéraction entre les particules. En ayant également l'énergie $E_{ancienne}$ de l'ancienne configuration, on accepte alors la nouvelle configuration avec probabilité : 
+\begin{equation}
+P=\mathrm{min}(1,\exp \left(-\beta \left(E_{nouvelle}-E_{ancienne}\right)\right))
+\end{equation}
+
+On continue de cette manière pour simuler un grand nombre de points, comme on peut le voir en Figure \ref{fig:2parts}. Il est alors possible de calculer l'énergie moyenne du système en appliquant la formule de Feynman-Kac, et en faisant tout simplement la moyenne sur l'énergie des points acceptés. Les résultats de l'énergie moyenne en fonction de la température sont visibles en Figure \ref{fig:energiemoy}.
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}{.5\textwidth}
+	\includegraphics[width=8cm]{2parts.png}
+	\caption{Points décrivant les trajectoires de deux particules classiques discernables en interaction. On voit facilement que la particule rouge expulse la particule bleue du puits de gauche, pourqu'elles soient toutes les deux au final dans des puits différents. On prend $\beta=10$.}\label{fig:2parts}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+	\centering
+	\includegraphics[width=8cm]{energy2parts.png}
+	\caption{Energie moyenne en fonction de la température du système.}\label{fig:energiemoy}
+\end{subfigure}
+\caption{Résultats de la simulation de deux particules classiques en intéraction.}\label{fig:sim2parts}
+\end{figure}
+
+Comment faire alors pour simuler un système quantique ? Il faut s'inspirer de la formule de Trotter vue en section \ref{sec:part} et utiliser un pseudo-potentiel quantique. Il faut donc, pour chacune des particules (ici deux) faire $M$ répliques, de sorte que la particule 1, par exemple, sera décrite à l'instant $t$ par ses $M$ répliques :
+\begin{equation}
+\left(X^{1,1}_t,X^{1,2}_t,\ldots X^{1,M-1}_t,X^{1,M}_t\right)
+\end{equation}
+où le premier indice supérieur indique le numéro de particule et le deuxième le numéro de réplique. En plus de l'intéraction classique pour chacune des répliques donnée par (formule écrite pour la k-ème réplique) :
+\begin{equation}
+V_{tot,class}(X^{k,1}_t)=V(X^{1,k}_t)+W(X^{1,k}_t,X^{2,k}_t)
+\end{equation}
+On doit rajouter le pseudo-potentiel quantique vu dans la formule de Trotter, c'est à dire :
+\begin{equation}
+V_{tot,quant}(X^{k,1}_t)=\frac{1}{2\beta\sigma^2}\left(\left(X^{k+1,1}_t-X^{k,1}_t\right)^2+\left(X^{k,1}_t-X^{k-1,1}_t\right)^2 \right)
+\end{equation}
+
+Avec $X^{1,M+1}_t=X^{1,0}_t$.
+\\
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=10cm]{quantummc.png}
+\caption{Trajectoire d'une réplique de chacune des deux particules pour une simulation d'un système quantique de particules discernables. On prend $M=10$ et $\beta=10$.}\label{fig:quantummc}
+\end{figure}
+
+On constate empiriquement que le temps de calcul est sensiblement plus élevé pour la simulation quantique que pour la simulation classique (environ 10 fois plus long), ce qui est normal parce que nous avons 10 fois plus de particules (on fait 10 répliques). De même, le taux d'acceptation (mouvements acceptés par l'algorithme métropolis) est d'environ $85\%$ pour la simulation classique, alors qu'il peine à atteindre $3\%$ pour la simulation quantique. Ce sont en effet des difficultés dont on peut en partie s'affranchir en utilisant la méthode PIMC (path-integral Monte-Carlo) présentée plus bas.
+
+Une autre des difficultés de cette approche est le fait qu'il faut tenir compte des permutations entre particules si on veut étudier un système bosonique. En effet, il faudrait donner l'option au système, dans l'algorithme, d'échanger deux répliques des deux particules entre elles pour pouvoir calculer l'énergie moyenne du système bosonique. Cependant savoir quand permettre cet échange et avec quelle probabilité n'est pas quelque chose d'évident quand on traite des bosons qui intéragissent entre eux.
+
 \subsection{Path-Integral Monte-Carlo}
 
+Une deuxième méthode que nous avons utilisé pour étudier notre problème est le \textbf{Path Integral Monte Carlo}. Ici, il s'agit de simuler les chemins entre deux points fixes et d'utiliser directement la formule de Trotter décrite plus haut. Concrètement, cette méthode se déroule de la façon suivante: 
 
+\begin{enumerate} 
+\item 
+Nous commençons avec une particule donnée et on fixe deux points $x_0$ et $x_M$. Ici $M$ est le paramètre qui apparaît dans la décomposition de Trotter. Il s'agit de diviser l'axe de temps imaginaire $\beta$ en $M$ tranches. 
+\item 
+Nous initialisons les positions $x_1 \cdots x_{M-1}$ de manière aléatoire. 
+\item 
+Nous choisissons une "tranche" de temps imaginaire $k$ parmi les $M-2$ tranches possibles et on effectue un petit déplacement du chemin d'une distance $dx$. 
+\item 
+Ensuite, nous calculons la différence d'action entre le chemin de départ et le nouveau chemin. L’énergie est décrite de manière suivante pour un chemin tranché en $M$ étapes de temps imaginaire :
+
+\begin{equation} 
+\label{energie_trotter}
+E = \sum_{j=1}^{M-1}\Big[ \frac{m}{2} \Big( \frac{\mathbf{R}_{j+1} - \mathbf{R}_j}{\Delta \tau}\Big)^2  + V(\mathbf{R}_j) \Big]
+\end{equation}
+
+où $m$ est la masse de particules et $V(\mathbf{R})$ est la potentiel auquel les particules sont soumises. Pour effectuer un premier essai avec l’intégrale de chemin, nous avons pris le cas d'un potentiel harmonique i.e. $V(x) = \frac{1}{2} m \omega^2 x^2$ pour lequel nous connaissons la solution exacte. Dans un premier temps nous n'avons pris qu'une seule particule. 
+\end{enumerate}
+
+Nous montrons en bas les différentes distributions de probabilité pour différentes valeurs de $\tau$. Nous nous rappelons que $\tau = \frac{\beta}{\hbar}$ définit l'axe de temps imaginaire. Nous avons pris des unités naturelles telles que $\hbar = m = \omega = 1$. Le rôle de la temperature est donc joué par $\frac{1}{\tau}$. 
+
+\begin{figure}[!h]
+\centering
+\input{probability_distributions}
+\caption{La distribution de probabilité P(x)}
+\end{figure}
+
+Nous traçons par la suite la variation de l'énergie moyenne en fonction de $\tau$. Nous remarquons que pour des grandes valeurs de $\tau$ et donc petites valeurs de température $T$, l’énergie moyenne reste autour de la valeur quantique 0.5 (puisque $\hbar=1$). Par contre, pour des petites valeurs de $\tau$, et donc grande $T$, les énergies sont beaucoup plus élevées. 
+
+\begin{figure}[!h]
+\centering
+\input{Energie_moyenne}
+\caption{Variation de l'énergie moyenne en fonction de $\tau$.}
+\end{figure}
+
+\subsubsection{Sampling de Levy} 
+
+Nous savons que l’intégrale de chemin est un outil très puissant. Toutefois, nous avons remarqué lors des simulations que le méthode décrite plus haut n'était pas rapide et qu'il nous fallait beaucoup d’itérations pour trouver les bons chemins. Pour nous affranchir de cette difficulté, nous avons décidé d'utiliser la méthode dite de de "\textbf{Levy Sampling}". De manière générale, le sampling de Lévy généralise les interpolations polynomiales ou trigonométriques en construisant une interpolation stochastique entre deux points $x_0$ et $x_N$. Ainsi, entre deux points de l'intervalle $[\tau_1, \tau_2]$, le chemin reliant $x(\tau_1)$ à $x(\tau_2)$ est l'interpolation stochastique entre ces deux points. De plus le comportement de ce chemin en dehors de cet intervalle n'a pas d'importance. Nous décrivons dans la suite l'utilité de cette méthode et nous proposons à la fin une méthode qui nous permettra de échantillonner les permutations, nécessaires pour traiter des bosons. 
+
+Nous partons d'un point $x_k$ compris entre deux positions fixes $x'$ et $x''$. Nous voulons trouver la probabilité conditionnelle qui le chemin reliant $x'$ et $x''$ passant par le point $x_k$. Pour cela nous avons:
+
+\begin{equation}
+\label{proba_levy_1}
+\pi^{\mathrm{libre}}(x_k|x',x'') \propto \rho^{\mathrm{libre}}(x', x_k, \Delta_{\tau}') \rho^{\mathrm{libre}}(x_k, x'', \Delta_{tau}'')
+\end{equation} 
+
+où les $\rho^{\mathrm{libre}}$ sont les matrices densité correspondant à des particules libres et qui s'écrivent comme : 
+
+\begin{align}
+\label{rho_free_levy}
+\rho^{\mathrm{libre}}(x', x_k, \Delta_{\tau}') &\propto \mathrm{exp}\Big[ - \frac{(x'-x_k)^2}{2\Delta_{\tau}'} \Big] \\
+\rho^{\mathrm{libre}}(x_k, x'', \Delta_{\tau}'') &\propto \mathrm{exp}\Big[ - \frac{(x_k-x'')^2}{2\Delta_{\tau}''} \Big]
+\end{align}
+
+En explicitant les termes dans les exponentielles nous trouvons que: 
+
+\begin{align} 
+\label{rho_free_levy_2}
+\pi^{\mathrm{libre}}(x_k|x',x'') \propto \mathrm{exp}\Big[ - \frac{(x_k - \langle x_k \rangle)^2}{2 \sigma^2} \Big]
+\end{align}
+
+où 
+\begin{align} 
+\langle x_k \rangle &= \frac{\Delta_{\tau}'' x' + \Delta_{\tau}'x''}{\Delta_{\tau}' + \Delta_{\tau}''} \\
+\sigma^2 &= \Big(\frac{1}{\Delta_{\tau}''} + \frac{1}{\Delta_{\tau}'}\Big)^{-1}
+\end{align}
+
+Nous remarquons alors que cette expression nous permet d'échantillonner les points qui relient deux points donnés $x'$ et $x''$. En particulier, entre $x_0$ et $x_N$, nous pouvons échantillonner le point $x_1$, entre $x_1$ et $x_N$ un point $x_2$, un point $x_3$ etc. jusqu'à la génération de tout le chemin $[x_1 \cdots x_{N-1}]$. Ce méthode nous permet finalement de créer un chemin allant de $x_0$ jusqu'à $x_N$ sans réjection. Concrètement pour générer un chemin entre deux points quelconque, il suffit de échantillonner une distribution gaussienne écart type $\sigma$ pour chaque tranche entre le point de départ $x_0$ et le point d'arrivée $x_N$. 
+
+Dans le cas de l'oscillateur harmonique, nous avons les paramètres suivants: 
+
+\begin{align}
+\label{levy_parameters_ho}
+\langle x_k \rangle &= \frac{\Gamma_1}{\Gamma_2} \\
+\sigma^2 &= \frac{1}{\Gamma_1} \\
+\Gamma_1 &= \coth{\Delta_{\tau}'} + \coth{\Delta_{\tau}''} \\
+\Gamma_2 &= \frac{x'}{\sinh{\Delta_{\tau}'}} + \frac{x''}{\sinh{\Delta_{tau}''}}
+\end{align}
+
+où la probabilité conditionnelle $\pi^{\mathrm{oh}}$ a la même forme que \eqref{rho_free_levy_2}. 
+
+\begin{figure}[!h]
+\label{levy_paths}
+\centering 
+\includegraphics[width=10cm]{levy_paths.png}
+\caption{6 chemins de Lévy construits pour différents points de départ.}
+\end{figure} 
+
+\subsubsection{Permutation Sampling} 
+
+Nous passons maintenant à l’étape le plus délicate en ce qui concerne la simulations des bosons, c'est-à-dire les permutations. Nous avons déjà évoqué ci-dessus que les bosons doivent avoir une fonction d'onde symétrique. Cela implique que dans les chemins que nous traçons entre deux points $X$ et $X'$ donnés, nous devons prendre en compte toutes les permutations $PX'$ également. Pour un système à $N$ particules, le nombre totale de permutations est très grand (de l'ordre de $N!$). C'est pour cette raison que nous devons trouver un moyen efficace d'échantillonner les permutations. 
+
+Commençons par un cas simple: un système à deux bosons n'intéragissant pas entre eux. Les chemins possible entre deux points fixes pour ces deux particules doivent être interchangeables puisque ce sont des particules indiscernables. Ce type de permutations est très simple: nous pouvons juste échanger les chemins entre les deux particules. 
+
+\begin{figure}[!h]
+\label{levy_paths_exchange}
+\centering 
+\includegraphics{levy_paths_2.png}
+\caption{L'échange entre les particules} 
+\end{figure} 
+
+Cependant, nous avons le choix de permuter les positions intermédiaires entre deux points quelconques aussi. C'est ici que nous utilisons la méthode de Lévy afin d’effectuer une permutation entre deux points quelconques sur les chemins des deux particules. Nous le ferons de la façon suivante: 
+
+\begin{enumerate} 
+\item 
+Tout d'abord nous choisissons deux instants $\tau_1$ et $\tau_2$ entre lesquels nous voulons effectuer un échange. 
+\item 
+Ensuite, nous supprimons les parties de chemin entre ces deux instants pour les deux particules. Pour les parties restantes en dehors de ces deux instants, nous échangeons les chemins entre les deux particules comme montré plus haut. 
+\item 
+Une fois échangés, nous créons deux nouveaux sous-chemins entre les instants $\tau_1$ et $\tau_2$ avec la construction de Lévy. La construction est faite comme si les particules étaient libres. Nous avons maintenant deux nouveaux chemins qui ont des positions permutées. 
+\item 
+Finalement, comment choisissons nous si nous devons accepter ces deux chemins ? Pour cela, nous comparons la différence d'énergie telle qu'elle est décrite en \eqref{energie_trotter} mais cette fois les valeurs de $M$ sont celles qui correspondent aux instants $\tau_1$ et $\tau_2$. Ainsi nous avons une probabilité d'acceptation: 
+
+\begin{equation}
+\label{acceptance_levy} 
+A(\mathrm{old}\rightarrow \mathrm{new}) = \min\left(1,\frac{\mathrm{exp}(-\beta E_{\mathrm{new}})}{\mathrm{exp}(-\beta E_{\mathrm{old}})}\right)
+\end{equation}
+
+où $E_\mathrm{new}$ and $E_\mathrm{old}$ sont des nouvelles et anciennes énergies calculées pour les anciens et les nouveaux chemins selon la formule \eqref{energie_trotter}. 
+\end{enumerate}
+
+Cela termine notre algorithme de permutation pour deux particules. Pour plus de particules, nous devons prendre en compte les nombres de voisins de chacune de deux particules qui se trouve à une distance critique donnée. Cela est très important quand nous devons prendre en compte les interactions entre les particules. Mais quand ce n'est pas le cas et que les particules évoluent sans interaction entre elles, nous pouvons tout simplement effectuer l'algorithme décrit ci-dessus. 
+\newpage
+\section*{Conclusion}
+Cet EA nous a ainsi permis de prendre un autre point de vue sur la physique quantique, en nous faisant par exemple découvrir la formulation de la mécanique avec des intégrales de chemin faite par Feynman. C'est un point de vue très riche, autant du point de vue de la compréhension que du point de vue des simulations possibles.
+\\
+
+Nous regrettons cependant ne pas avoir pu implémenter les algorithmes pour faire les permutations de particules et de chemins, qui auraient pu nous permettre de voir des phénomènes quantiques liés aux bosons, comme la condensation de Bose-Einstein. Ce sont en fin de compte ces phénomènes qui permettent, par exemple, de comprendre la superfluidité de l'hélium comme c'est fait dans le célèbre article de Ceperley que nous avons utilisé pour faire cet EA. 
 
 \newpage
 \begin{thebibliography}{analytique}
