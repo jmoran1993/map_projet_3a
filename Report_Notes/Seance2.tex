@@ -456,6 +456,43 @@ où la somme porte sur toutes les configurations possibles de $x$.
 \end{equation}
 
 
-\section{Méthode d'integrale de Chemin}
+\subsection{Path Integral Monte Carlo}
+
+Un deuxième méthode que nous avons utilisé pour étudier l'outil de l’intégrale de chemin est le \textbf{Path Integral Monte Carlo}. Ici, il s'agit de simuler les chemins entre deux points fixes et d'utiliser directement le formule de Trotter décrit plus haut. Concrètement, ce méthode déroule de façon suivante: 
+
+\begin{enumerate} 
+\item 
+Nous commençons avec une particule donné et on fixe deux points $x_0$ et $x_M$. Ici $M$ est le paramètre qui apparaît dans la décomposition de Trotter. Il s'agit de diviser l'axe de temps imaginaire en $M$ tranches. 
+\item 
+Nous initialisons les positions $x_1 \cdots x_{M-1}$ de manière aléatoire. 
+\item 
+Nous choisissons un tranche $m$ parmi les $M-2$ tranches possibles et on effectue un petit déplacement du chemin par une distance $dx$. 
+\item 
+Ensuite, nous calculons la différence d'action entre le chemin de départ et le nouveau chemin. L’énergie est décrit de manière suivante pour un chemin tranché en $M$ étapes de temps imaginaire:
+
+\begin{equation} 
+\label{energie_trotter}
+E = \sum_{j=1}^{M-1}\Big[ \frac{m}{2} \Big( \frac{\mathbf{R}_{j+1} - \mathbf{R}_j}{\Delta \tau}\Big)^2  + V(\mathbf{R}_j) \Big]
+\end{equation}
+
+où $m$ est la masse de particules et $V(\mathbf{R})$ est la potentiel auquel les particules sont soumis. Pour effectuer un premier essai avec l'outil d’intégrale de chemin, nous avons pris le cas d'un potentiel harmonique i.e. $V(x) = \frac{1}{2} m \omega^2 x^2$ pour lequel nous connaissons la solution exacte. Dans un premier temps nous avons pris qu'une seule particule. 
+\end{enumerate}
+
+Nous montrons en bas les différentes distributions de probabilité pour différentes valeurs de $\tau$. Nous nous rappelons que $\tau = \frac{\beta}{\hbar}$ défini l'axe de temps imaginaire. Nous avons pris les unités telles que $\hbar = m = \omega = 0$. Et donc, le rôle de temperature est joué par $\frac{1}{\tau}$. 
+
+\begin{figure}[!h]
+\centering
+\input{probability_distributions}
+\caption{La distribution de probabilité P(x)}
+\end{figure}
+
+Nous traçons par la suite la variation d’énergie moyenne en fonction de $\tau$. Nous remarquons que pour les grandes valeurs de $\tau$ et donc petites valeurs de température $T$, l’énergie moyenne reste autour de la valeur quantique 0.5 (puisque $\hbar=1$). Par contre, pour les petites valeurs de $\tau$ et donc grande $T$, les énergies sont beaucoup plus élevés. 
+
+\begin{figure}[!h]
+\centering
+\input{Energie_moyenne}
+\caption{Variation d’énergie moyenne en fonction de $\tau$.}
+\end{figure}
+
 
 \end{document} 

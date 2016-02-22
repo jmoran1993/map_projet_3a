@@ -80,10 +80,10 @@ int main()
          << " -----------------------------------------------------\n";
 
     // set simulation parameters
-    cout << " Imaginary time period tau = " << (tau = 100)
-         << "\n Number of time slices M = " << (M = 100)
-         << "\n Maximum displacement to bin x_max = " << (x_max = 100.)
-         << "\n Number of histogram bins in x = " << (n_bins = 1000)
+    cout << " Imaginary time period tau = " << (tau = 500)
+         << "\n Number of time slices M = " << (M = 1000)
+         << "\n Maximum displacement to bin x_max = " << (x_max = 4.)
+         << "\n Number of histogram bins in x = " << (n_bins = 100)
          << "\n Metropolis step size delta = " << (delta = 1.0)
          << "\n Number of Monte Carlo steps = " << (MC_steps = 100000)
          << endl;
@@ -125,7 +125,7 @@ int main()
     double E_var = E_sqd_sum / values - E_ave * E_ave;
     cout << "\n <E> = " << E_ave << " +/- " << sqrt(E_var / values)
          << "\n <E^2> - <E>^2 = " << E_var << endl;
-    ofstream ofs("p1.out");
+    ofstream ofs("p1000.txt");
     E_ave = 0;
     for (int bin = 0; bin < n_bins; ++bin) {
         double x = x_min + dx * (bin + 0.5);
