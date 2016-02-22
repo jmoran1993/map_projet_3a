@@ -45,8 +45,10 @@ def interD(d,delta=0.20):
     return -0.3*blipn(0.25,0.75,d)+0.1*blipn(-0.15,0.15,d)
 
 x=np.arange(0,1,0.01)
-b=[for each p in x : interD(p)]
+b=[]
+for p in x:
+    b.append(interD(p))
 plt.plot(x,b)
-plt.xlabel("x")
-plt.ylabel("b(x)")
+plt.xlabel("r")
+plt.ylabel("W(r)")
 plt.show()

@@ -663,12 +663,12 @@ Enfin nous avons utilisé, lorsque nous avons simulé pour les deux particules, 
 
 Une fois le potentiel global et le potentiel d'interaction étant bien défini, nous avons défini, pour chaque particule, le schèma suivant. On note $X^{i}_t$ le vecteur qui donne la position de la $i_eme$ particule au pas de temps $t=k\Delta t$ où $\Delta t$ est le pas de temps et $k\in \mathbb{N}$ le nombre de pas faits.
 
-Ainsi on définit un processus en posant : 
+Regardons d'abord comment simuler le système classique. Ainsi on définit un processus en posant : 
 \begin{equation}
 X^{i}_{t+1}=X^{i}_t-\vec{\nabla}V_{tot}(X^{i}_t,X^j_t)+\sigma \sqrt{\Delta t}\xi_t
 \end{equation} 
 
-Où on définit $\sigma =\frac{\sqrt{2}}{\beta}$, avec $\beta=\frac{1}{T}$ où $T$ est la température (on prend des unités naturelles où $k_B=1$. De même $\xi_t$ sont des variables gaussiennes i.i.d. de moyenne nulle et variance $1$.
+Où on définit $\sigma =\frac{\sqrt{2}}{\beta}$, avec $\beta=\frac{1}{T}$ où $T$ est la température (on prend des unités naturelles où $k_B=1$. De même $\xi_t$ sont des variables gaussiennes i.i.d. de moyenne nulle et variance $1$. Il va de soi que $j\neq i$.
 
 Chaque pas est accepté en utilisant l'algorithme de Métropolis que nous avons décrit plus haut.
 \subsection{Path-Integral Monte-Carlo}
