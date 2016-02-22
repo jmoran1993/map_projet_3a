@@ -8,6 +8,8 @@
 #include <random>
 using namespace std;
 
+//tau_list = [1000,100,50,40,20,10,1, 0.5, 0.05, 0.005, 10e-5, 10e-6]
+
 double V(double x)          // potential energy function
 {
     // use units such that m = 1 and omega_0 = 1
@@ -78,9 +80,9 @@ int main()
          << " -----------------------------------------------------\n";
 
     // set simulation parameters
-    cout << " Imaginary time period tau = " << (tau = 1.01)
-         << "\n Number of time slices M = " << (M = 100)
-         << "\n Maximum displacement to bin x_max = " << (x_max = 4.0)
+    cout << " Imaginary time period tau = " << (tau = 500)
+         << "\n Number of time slices M = " << (M = 1000)
+         << "\n Maximum displacement to bin x_max = " << (x_max = 4.)
          << "\n Number of histogram bins in x = " << (n_bins = 100)
          << "\n Metropolis step size delta = " << (delta = 1.0)
          << "\n Number of Monte Carlo steps = " << (MC_steps = 100000)
@@ -100,7 +102,7 @@ int main()
     double E_sum = 0, E_sqd_sum = 0;
     P.clear();
     acceptances = 0;
-    cout << " Doing " << MC_steps << " production steps ...";
+    cout << " Doing " << MC_steps << " Path Integral steps ...";
     for (int step = 0; step < MC_steps; ++step) {
         for (int j = 0; j < M; ++j) {
             if (Metropolis_step_accepted(x_new))
@@ -117,13 +119,13 @@ int main()
     }
 
     // compute averages
-    cout << " Accepted steps" << acceptances * 1.0 / (MC_steps * M) << endl;
+    cout << " \n Accepted steps" << acceptances / double(MC_steps * M) * 100 << endl;
     double values = MC_steps * M;
     double E_ave = E_sum / values;
     double E_var = E_sqd_sum / values - E_ave * E_ave;
     cout << "\n <E> = " << E_ave << " +/- " << sqrt(E_var / values)
          << "\n <E^2> - <E>^2 = " << E_var << endl;
-    ofstream ofs("pimc.out");
+    ofstream ofs("p1000.txt");
     E_ave = 0;
     for (int bin = 0; bin < n_bins; ++bin) {
         double x = x_min + dx * (bin + 0.5);
@@ -132,8 +134,6 @@ int main()
     }
     ofs.close();
     cout << " <E> from P(x) = " << E_ave << endl;
-    cout << " Probability histogram written to file pimc.out" << endl;
-    double E_theoretical = 0.5 + 1/(exp(tau)-1.0);
-    cout << " Theoretical Energy " << tau * E_theoretical << endl;
+    cout << " Probability histogram written to file" << endl;
     return 0;
 }

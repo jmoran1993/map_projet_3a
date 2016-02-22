@@ -456,6 +456,131 @@ où la somme porte sur toutes les configurations possibles de $x$.
 \end{equation}
 
 
-\section{Méthode d'integrale de Chemin}
+\subsection{Path Integral Monte Carlo}
+
+Un deuxième méthode que nous avons utilisé pour étudier l'outil de l’intégrale de chemin est le \textbf{Path Integral Monte Carlo}. Ici, il s'agit de simuler les chemins entre deux points fixes et d'utiliser directement le formule de Trotter décrit plus haut. Concrètement, ce méthode déroule de façon suivante: 
+
+\begin{enumerate} 
+\item 
+Nous commençons avec une particule donné et on fixe deux points $x_0$ et $x_M$. Ici $M$ est le paramètre qui apparaît dans la décomposition de Trotter. Il s'agit de diviser l'axe de temps imaginaire en $M$ tranches. 
+\item 
+Nous initialisons les positions $x_1 \cdots x_{M-1}$ de manière aléatoire. 
+\item 
+Nous choisissons un tranche $m$ parmi les $M-2$ tranches possibles et on effectue un petit déplacement du chemin par une distance $dx$. 
+\item 
+Ensuite, nous calculons la différence d'action entre le chemin de départ et le nouveau chemin. L’énergie est décrit de manière suivante pour un chemin tranché en $M$ étapes de temps imaginaire:
+
+\begin{equation} 
+\label{energie_trotter}
+E = \sum_{j=1}^{M-1}\Big[ \frac{m}{2} \Big( \frac{\mathbf{R}_{j+1} - \mathbf{R}_j}{\Delta \tau}\Big)^2  + V(\mathbf{R}_j) \Big]
+\end{equation}
+
+où $m$ est la masse de particules et $V(\mathbf{R})$ est la potentiel auquel les particules sont soumis. Pour effectuer un premier essai avec l'outil d’intégrale de chemin, nous avons pris le cas d'un potentiel harmonique i.e. $V(x) = \frac{1}{2} m \omega^2 x^2$ pour lequel nous connaissons la solution exacte. Dans un premier temps nous avons pris qu'une seule particule. 
+\end{enumerate}
+
+Nous montrons en bas les différentes distributions de probabilité pour différentes valeurs de $\tau$. Nous nous rappelons que $\tau = \frac{\beta}{\hbar}$ défini l'axe de temps imaginaire. Nous avons pris les unités telles que $\hbar = m = \omega = 0$. Et donc, le rôle de temperature est joué par $\frac{1}{\tau}$. 
+
+\begin{figure}[!h]
+\centering
+\input{probability_distributions}
+\caption{La distribution de probabilité P(x)}
+\end{figure}
+
+Nous traçons par la suite la variation d’énergie moyenne en fonction de $\tau$. Nous remarquons que pour les grandes valeurs de $\tau$ et donc petites valeurs de température $T$, l’énergie moyenne reste autour de la valeur quantique 0.5 (puisque $\hbar=1$). Par contre, pour les petites valeurs de $\tau$ et donc grande $T$, les énergies sont beaucoup plus élevés. 
+
+\begin{figure}[!h]
+\centering
+\input{Energie_moyenne}
+\caption{Variation d’énergie moyenne en fonction de $\tau$.}
+\end{figure}
+
+\subsubsection{Sampling de Levy} 
+
+Nous savons que l’intégrale de chemin est un outil très puissant. Toutefois, nous avons remarquer lors des simulations que le méthode décrit plus haut n'était pas rapide et il nous fallait beaucoup d’itérations pour trouver les bons chemins. Pour affranchir cette difficulté, nous avons décidé d'utiliser le méthode de \textbf{Levy Sampling}. De manière générale, le sampling de Lévy généralise l’interpolation polynomiales ou trigonométriques en construisant une interpolation stochastique entre deux points $x_0$ et $x_N$. Donc, entre deux points dans l'intervalle $[\tau_1, \tau_2]$, le chemin reliant $x(\tau_1)$ à $x(\tau_2)$ est l'interpolation stochastique entre ces deux points et de plus le comportement de ce chemin hors de cet intervalle n'a pas d'importance. Nous décrivons dans la suite l'utilité de cette méthode et nous proposons à la fin une méthode qui nous permettra de échantillonner les permutations. 
+
+Nous partons d'un point $x_k$ compris entre deux positions fixes $x'$ et $x''$. Nous voulons trouver la probabilité conditionnelle qui le chemin reliant $x'$ et $x''$ passe par le point $x_k$. Pour cela nous avons:
+
+\begin{equation}
+\label{proba_levy_1}
+\pi^{\mathrm{libre}}(x_k|x',x'') \propto \rho^{\mathrm{libre}}(x', x_k, \Delta_{\tau}') \rho^{\mathrm{libre}}(x_k, x'', \Delta_{tau}'')
+\end{equation} 
+
+où les $\rho^{\mathrm{libre}}$ sont des matrices de densité correspondants à des particules libre et qui s'écrivent comme: 
+
+\begin{align}
+\label{rho_free_levy}
+\rho^{\mathrm{libre}}(x', x_k, \Delta_{\tau}') &\propto \mathrm{exp}\Big[ - \frac{(x'-x_k)^2}{2\Delta_{\tau}'} \Big] \\
+\rho^{\mathrm{libre}}(x_k, x'', \Delta_{\tau}'') &\propto \mathrm{exp}\Big[ - \frac{(x_k-x'')^2}{2\Delta_{\tau}''} \Big]
+\end{align}
+
+En explicitant les termes dans les exponentielles nous trouvons que: 
+
+\begin{align} 
+\label{rho_free_levy_2}
+\pi^{\mathrm{libre}}(x_k|x',x'') \propto \mathrm{exp}\Big[ - \frac{(x_k - \langle x_k \rangle)^2}{2 \sigma^2} \Big]
+\end{align}
+
+où 
+\begin{align} 
+\langle x_k \rangle &= \frac{\Delta_{\tau}'' x' + \Delta_{\tau}'x''}{\Delta_{\tau}' + \Delta_{\tau}''} \\
+\sigma^2 &= \Big(\frac{1}{\Delta_{\tau}''} + \frac{1}{\Delta_{\tau}'}\Big)^{-1}
+\end{align}
+
+Nous remarquons que cette expression nous permet d'échantillonner les points entre deux points donnée $x'$ et $x''$. En particulier, entre $x_0$ et $x_N$, nous pouvons échantillonner le point $x_1$, entre $x_1$ et $x_N$ un point $x_2$, un point $x_3$ etc. jusqu'à la génération de tout le chemin $[x_1 \cdots x_{N-1}]$. Ce méthode nous permet finalement de créer un chemin allant de $x_0$ jusqu'à $x_N$ sans réjection. Concrètement pour générer un chemin entre deux points quelconque, il suffit de échantillonner d'une distribution gaussienne avec l'écart type $\sigma$ pour chaque tranche entre le point de départ $x_0$ et le point d'arrivée $x_N$. 
+
+Dans le cas de l'oscillateur harmonique, nous avons les paramètres suivants: 
+
+\begin{align}
+\label{levy_parameters_ho}
+\langle x_k \rangle &= \frac{\Gamma_1}{\Gamma_2} \\
+\sigma^2 &= \frac{1}{\Gamma_1} \\
+\Gamma_1 &= \coth{\Delta_{\tau}'} + \coth{\Delta_{\tau}''} \\
+\Gamma_2 &= \frac{x'}{\sinh{\Delta_{\tau}'}} + \frac{x''}{\sinh{\Delta_{tau}''}}
+\end{align}
+
+où la probabilité conditionnelle $\pi^{\mathrm{oh}}$ a la même forme que \eqref{rho_free_levy_2}. 
+
+\begin{figure}[!h]
+\label{levy_paths}
+\centering 
+\includegraphics[width=10cm]{levy_paths.png}
+\caption{6 chemins de Lévy construit pour différents points de départ.}
+\end{figure} 
+
+\subsubsection{Permutation Sampling} 
+
+Nous passons maintenant à l’étape le plus délicat en ce qui concerne la simulations des bosons, c'est-à-dire les permutations. Nous avons déjà évoqué ci-dessus que les bosons ayant un spin entier doivent avoir une fonction d'onde symétrique. Cela implique que dans les chemins que nous traçons entre deux points $\mathbf{R}$ et $\mathbf{R'}$ donnés, nous devons prendre en compte toutes les permutations $\mathcal{P}\mathbf{R}'$ aussi. Pour un système à $N$ particules, le nombre totale des permutations devient très grand (puisque en $N!$). C'est pour cette raison là que nous devons échantillonner les permutations aussi. 
+
+Commençons par un cas simple: un système à deux bosons n'ayant pas une terme d'interaction entre les deux. Les chemins possible entre deux points fixes pour ces deux particules doivent être interchangeable puisque ceux sont des particules indiscernables. Une type de permutations est très simple: nous pouvons juste échanger les chemins entre les deux particules. 
+
+\begin{figure}[!h]
+\label{levy_paths_exchange}
+\centering 
+\includegraphics{levy_paths_2.png}
+\caption{L'échange entre les particules} 
+\end{figure} 
+
+Cependant, nous avons un choix de permuter les positions intermédiaires entre deux points quelconques aussi. C'est ici que nous utilisons le méthode de Lévy afin d’effectuer une permutation entre deux points quelconques sur les chemins des deux particules. Nous ferons de la façon suivante: 
+
+\begin{enumerate} 
+\item 
+Tout d'abord nous choisissons deux instant $\tau_1$ et $\tau_2$ entre lesquels nous voulons effectuer un échange. 
+\item 
+Ensuite, nous supprimons les parties de chemins entre ces deux instants pour ces deux instants pour les deux particules. Pour les parties restantes hors de ces deux instants, nous échangeons les chemins entre les deux particules comme montré plus haut. 
+\item 
+Une fois échangé, nous créons deux nouveaux sous-chemins entre les instants $\tau_1$ et $\tau_2$ avec la construction de Lévy. La construction est faite comme ci les particules étaient libres. Nous avons maintenant deux nouveaux chemins qui ont des positions permutés. 
+\item 
+Finalement, comment choisissons nous si nous devons accepter ces deux chemins? Pour cela, nous comparons la différence d'énergie telle qu'il est décrit en \eqref{energie_trotter} mais cette fois les valeurs de $M$ sont celles qui correspondent aux instants $\tau_1$ et $\tau_2$. Donc, nous avons une probabilité d'acceptation: 
+
+\begin{equation}
+\label{acceptance_levy} 
+A(\mathrm{old}\rightarrow \mathrm{new}) = \min\left(1,\frac{\mathrm{exp}(-\beta E_{\mathrm{new}})}{\mathrm{exp}(-\beta E_{\mathrm{old}})}\right)
+\end{equation}
+
+où $E_\mathrm{new}$ and $E_\mathrm{old}$ sont des nouvelles et anciennes énergies calculées pour les anciens et les nouveaux chemins selon la formule \eqref{energie_trotter}. 
+\end{enumerate}
+
+Cela termine notre algorithme de permutation pour deux particules. Pour plus de particules, nous devons prendre en compte les nombres de voisins de chacun de deux particules qui se trouve à une distance critique donné. Ce dernier est très important quand nous devons prendre en compte les interactions entre les particules. Mais quand ce n'est pas le cas et que les particules évoluent sans interaction entre eux, nous pouvons effectuer l'algorithme décrit ci-dessus. 
+
 
 \end{document} 
