@@ -5,9 +5,6 @@
 *.out
 *.synctex.gz
 *.toc
-*.dvi
-*.nav
-*.snm
 
 ## C++ compilation stuff 
 
